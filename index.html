@@ -6,174 +6,149 @@
 <title>Polla Mundial 2026 · Federismo</title>
 <style>
   :root {
-    --bg: #f5f4f0;
-    --surface: #ffffff;
-    --border: #e2e0d8;
-    --border-light: #eeede6;
-    --text: #1a1a1a;
-    --text-2: #555550;
-    --text-3: #888880;
-    --accent: #1a1a2e;
-    --accent-hover: #2d2d50;
-    --green: #27500a;
-    --green-bg: #eaf3de;
-    --green-border: #c0dd97;
-    --blue: #0c447c;
-    --blue-bg: #e6f1fb;
-    --amber: #633806;
-    --amber-bg: #faeeda;
-    --amber-border: #fac775;
-    --red: #a32d2d;
-    --red-bg: #fcebeb;
-    --purple: #3c3489;
-    --purple-bg: #eeedfe;
+    --bg: #f5f4f0; --surface: #fff; --border: #e2e0d8; --border-light: #eeede6;
+    --text: #1a1a1a; --text-2: #555550; --text-3: #888880;
+    --accent: #1a1a2e; --accent-h: #2d2d50;
+    --green: #27500a; --green-bg: #eaf3de; --green-b: #c0dd97;
+    --blue: #0c447c; --blue-bg: #e6f1fb;
+    --amber: #633806; --amber-bg: #faeeda; --amber-b: #fac775;
+    --red: #a32d2d; --red-bg: #fcebeb;
+    --purple: #3c3489; --purple-bg: #eeedfe;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-  /* ── AUTH SCREEN ── */
-  .auth-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  /* AUTH */
+  .auth-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
   .auth-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 16px; padding: 32px; width: 100%; max-width: 380px; }
   .auth-logo { font-size: 28px; margin-bottom: 4px; }
-  .auth-title { font-size: 18px; font-weight: 600; color: var(--accent); margin-bottom: 4px; }
+  .auth-title { font-size: 18px; font-weight: 600; color: var(--accent); margin-bottom: 2px; }
   .auth-sub { font-size: 13px; color: var(--text-3); margin-bottom: 24px; }
-  .field { margin-bottom: 14px; }
-  .field label { font-size: 12px; font-weight: 500; color: var(--text-2); display: block; margin-bottom: 4px; }
-  .field input { width: 100%; padding: 9px 12px; border: 0.5px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.15s; }
-  .field input:focus { border-color: var(--accent); }
-  .btn-primary { width: 100%; padding: 10px; background: var(--accent); color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.15s; }
-  .btn-primary:hover { background: var(--accent-hover); }
-  .auth-error { background: var(--red-bg); color: var(--red); border: 0.5px solid #e8b4b4; border-radius: 8px; padding: 9px 12px; font-size: 13px; margin-bottom: 14px; display: none; }
+  .auth-err { background: var(--red-bg); color: var(--red); border: 0.5px solid #e8b4b4; border-radius: 8px; padding: 9px 12px; font-size: 13px; margin-bottom: 14px; display: none; }
+  .f { margin-bottom: 14px; }
+  .f label { font-size: 12px; font-weight: 500; color: var(--text-2); display: block; margin-bottom: 4px; }
+  .f input { width: 100%; padding: 9px 12px; border: 0.5px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; transition: border-color .15s; }
+  .f input:focus { border-color: var(--accent); }
+  .btn-login { width: 100%; padding: 10px; background: var(--accent); color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; }
+  .btn-login:hover { background: var(--accent-h); }
 
-  /* ── APP SHELL ── */
+  /* APP */
   #app { display: none; }
-  .app-header { background: var(--accent); color: #fff; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
-  .app-header-left h1 { font-size: 15px; font-weight: 500; }
-  .app-header-left .user-info { font-size: 11px; opacity: 0.6; margin-top: 1px; }
-  .logout-btn { font-size: 12px; opacity: 0.7; cursor: pointer; background: none; border: none; color: #fff; padding: 4px 8px; border-radius: 6px; transition: opacity 0.15s; }
-  .logout-btn:hover { opacity: 1; background: rgba(255,255,255,0.1); }
+  .hdr { background: var(--accent); color: #fff; padding: 11px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .hdr h1 { font-size: 15px; font-weight: 500; }
+  .hdr .uinfo { font-size: 11px; opacity: .55; margin-top: 1px; }
+  .hdr-logout { font-size: 12px; background: none; border: none; color: #fff; opacity: .65; cursor: pointer; padding: 4px 8px; border-radius: 6px; }
+  .hdr-logout:hover { opacity: 1; background: rgba(255,255,255,.1); }
   .nav { background: var(--surface); border-bottom: 0.5px solid var(--border); display: flex; overflow-x: auto; }
-  .nav-btn { padding: 10px 16px; font-size: 13px; font-weight: 500; color: var(--text-3); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
+  .nav-btn { padding: 10px 16px; font-size: 13px; font-weight: 500; color: var(--text-3); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; transition: all .15s; }
   .nav-btn:hover { color: var(--accent); }
   .nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
-  .nav-btn.admin-only { display: none; }
+  .admin-tab { display: none; }
 
-  /* ── PAGES ── */
-  .page { display: none; padding: 16px 20px; max-width: 860px; margin: 0 auto; }
+  /* PAGES */
+  .page { display: none; padding: 16px 20px; max-width: 880px; margin: 0 auto; }
   .page.active { display: block; }
-
-  /* ── COMMON ── */
-  .section-label { font-size: 11px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.8px; margin: 16px 0 8px; }
+  .slabel { font-size: 11px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: .8px; margin: 16px 0 8px; }
   .card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 12px; }
-  .card-title { font-size: 13px; font-weight: 600; color: var(--accent); margin-bottom: 10px; }
+  .ctitle { font-size: 13px; font-weight: 600; color: var(--accent); margin-bottom: 10px; }
   .alert { padding: 9px 13px; border-radius: 8px; font-size: 13px; margin-bottom: 12px; }
-  .alert-info { background: var(--blue-bg); color: var(--blue); border: 0.5px solid #b5d4f4; }
-  .alert-warning { background: var(--amber-bg); color: var(--amber); border: 0.5px solid var(--amber-border); }
-  .alert-success { background: var(--green-bg); color: var(--green); border: 0.5px solid var(--green-border); }
+  .ai { background: var(--blue-bg); color: var(--blue); border: 0.5px solid #b5d4f4; }
+  .aw { background: var(--amber-bg); color: var(--amber); border: 0.5px solid var(--amber-b); }
+  .ag { background: var(--green-bg); color: var(--green); border: 0.5px solid var(--green-b); }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
   .grid4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
   label { font-size: 12px; color: var(--text-2); display: block; margin-bottom: 3px; }
   input[type=text], input[type=number], input[type=password], input[type=email], select {
     width: 100%; padding: 7px 9px; border: 0.5px solid var(--border); border-radius: 8px;
-    font-size: 13px; background: var(--surface); color: var(--text); outline: none; transition: border-color 0.15s;
+    font-size: 13px; background: var(--surface); color: var(--text); outline: none; transition: border-color .15s;
   }
   input:focus, select:focus { border-color: var(--accent); }
-  .btn { padding: 7px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; border: 0.5px solid var(--border); background: var(--surface); color: var(--text); transition: all 0.15s; }
+  .btn { padding: 7px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; border: 0.5px solid var(--border); background: var(--surface); color: var(--text); transition: all .15s; }
   .btn:hover { background: var(--bg); }
-  .btn.btn-accent { background: var(--accent); color: #fff; border-color: var(--accent); }
-  .btn.btn-accent:hover { background: var(--accent-hover); }
-  .btn.btn-sm { padding: 4px 10px; font-size: 12px; }
-  .flex-row { display: flex; align-items: center; gap: 8px; }
-  .flex-sb { display: flex; align-items: center; justify-content: space-between; }
+  .btn.ba { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn.ba:hover { background: var(--accent-h); }
+  .btn.bsm { padding: 4px 10px; font-size: 12px; }
+  .frow { display: flex; align-items: center; gap: 8px; }
+  .fsb { display: flex; align-items: center; justify-content: space-between; }
 
-  /* ── RANKING ── */
-  .ranking-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .ranking-table th { text-align: left; padding: 7px 10px; font-size: 11px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 0.5px solid var(--border); }
-  .ranking-table td { padding: 9px 10px; border-bottom: 0.5px solid var(--border-light); vertical-align: middle; }
-  .ranking-table tr:last-child td { border-bottom: none; }
-  .ranking-table tr:hover td { background: var(--bg); }
-  .rank-num { font-size: 14px; font-weight: 600; }
-  .rank-gold { color: #ba7517; }
-  .rank-silver { color: #5f5e5a; }
-  .rank-bronze { color: #854f0b; }
-  .avatar { width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0; }
-  .pts-pill { background: var(--accent); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-  .stat-card { background: var(--bg); border-radius: 8px; padding: 12px; text-align: center; }
-  .stat-val { font-size: 20px; font-weight: 600; color: var(--accent); }
-  .stat-lbl { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+  /* RANKING */
+  .rtable { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .rtable th { text-align: left; padding: 7px 10px; font-size: 11px; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: .5px; border-bottom: 0.5px solid var(--border); }
+  .rtable td { padding: 9px 10px; border-bottom: 0.5px solid var(--border-light); vertical-align: middle; }
+  .rtable tr:last-child td { border-bottom: none; }
+  .rtable tr:hover td { background: var(--bg); }
+  .rnum { font-size: 14px; font-weight: 600; }
+  .rg { color: #ba7517; } .rs { color: #5f5e5a; } .rb { color: #854f0b; }
+  .av { width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0; }
+  .ppill { background: var(--accent); color: #fff; padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  .sc { background: var(--bg); border-radius: 8px; padding: 12px; text-align: center; }
+  .sv { font-size: 20px; font-weight: 600; color: var(--accent); }
+  .sl { font-size: 11px; color: var(--text-3); margin-top: 2px; }
 
-  /* ── BADGES ── */
+  /* BADGES */
   .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-  .badge-groups { background: var(--blue-bg); color: var(--blue); }
-  .badge-r32 { background: #f1efe8; color: #444441; }
-  .badge-r16 { background: var(--amber-bg); color: var(--amber); }
-  .badge-qf { background: #fbeaf0; color: #72243e; }
-  .badge-sf { background: var(--purple-bg); color: var(--purple); }
-  .badge-final { background: var(--green-bg); color: var(--green); }
-
-  /* ── GROUP TAGS ── */
+  .bg { background: var(--blue-bg); color: var(--blue); }
+  .br32 { background: #f1efe8; color: #444441; }
+  .br16 { background: var(--amber-bg); color: var(--amber); }
+  .bqf { background: #fbeaf0; color: #72243e; }
+  .bsf { background: var(--purple-bg); color: var(--purple); }
+  .bfin { background: var(--green-bg); color: var(--green); }
   .gtag { display: inline-block; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px; margin-right: 4px; vertical-align: middle; }
-  .gtag-A { background: #fbeaf0; color: #72243e; }
-  .gtag-B { background: var(--green-bg); color: var(--green); }
-  .gtag-C { background: var(--blue-bg); color: var(--blue); }
-  .gtag-D { background: var(--amber-bg); color: var(--amber); }
-  .gtag-E { background: var(--purple-bg); color: var(--purple); }
-  .gtag-F { background: #fef3e2; color: #7a4b00; }
-  .gtag-G { background: #e0f5f0; color: #0a5540; }
-  .gtag-H { background: #f3e8ff; color: #5b1f8a; }
-  .gtag-I { background: #fff0f0; color: #8a1f1f; }
-  .gtag-J { background: #e8f4fd; color: #1a4f7a; }
-  .gtag-K { background: #f0fff0; color: #1a5a1a; }
-  .gtag-L { background: #fff8e8; color: #7a5a00; }
+  .gA{background:#fbeaf0;color:#72243e;} .gB{background:#eaf3de;color:#27500a;} .gC{background:#e6f1fb;color:#0c447c;}
+  .gD{background:#faeeda;color:#633806;} .gE{background:#eeedfe;color:#3c3489;} .gF{background:#fef3e2;color:#7a4b00;}
+  .gG{background:#e0f5f0;color:#0a5540;} .gH{background:#f3e8ff;color:#5b1f8a;} .gI{background:#fff0f0;color:#8a1f1f;}
+  .gJ{background:#e8f4fd;color:#1a4f7a;} .gK{background:#f0fff0;color:#1a5a1a;} .gL{background:#fff8e8;color:#7a5a00;}
 
-  /* ── JORNADAS ── */
-  .phase-divider { font-size: 11px; font-weight: 700; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.8px; padding: 14px 0 4px; border-top: 0.5px solid var(--border); margin-top: 8px; }
-  .phase-divider:first-child { border-top: none; margin-top: 0; }
-  .jornada-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 8px; overflow: hidden; }
-  .jornada-header { padding: 10px 14px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
-  .jornada-header:hover { background: var(--bg); }
-  .jornada-body { display: none; padding: 12px 14px; border-top: 0.5px solid var(--border); }
-  .jornada-body.open { display: block; }
-  .status-pill { font-size: 11px; padding: 2px 8px; border-radius: 20px; }
-  .status-pending { color: var(--amber); background: var(--amber-bg); }
-  .status-partial { color: var(--blue); background: var(--blue-bg); }
-  .status-done { color: var(--green); background: var(--green-bg); }
-  .match-preview { font-size: 11px; color: var(--text-3); line-height: 1.9; margin-bottom: 10px; }
-  .match-pick-row { background: var(--bg); border-radius: 8px; border: 0.5px solid var(--border-light); padding: 8px 10px; margin-bottom: 6px; }
-  .match-lbl { font-size: 11px; color: var(--text-3); margin-bottom: 5px; }
-  .score-pair { display: flex; gap: 8px; align-items: flex-end; }
-  .score-pair .sf { flex: 1; }
-  .vs-sep { font-size: 11px; color: var(--text-3); padding-bottom: 8px; }
-  .tab-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
-  .tab-btn { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; border: 0.5px solid var(--border); background: var(--surface); color: var(--text-2); transition: all 0.15s; }
-  .tab-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .tab-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-  .my-picks-form { background: #f0f7ff; border-radius: 8px; padding: 10px 12px; }
+  /* JORNADAS */
+  .pdiv { font-size: 11px; font-weight: 700; color: var(--text-3); text-transform: uppercase; letter-spacing: .8px; padding: 14px 0 4px; border-top: 0.5px solid var(--border); margin-top: 8px; }
+  .pdiv:first-child { border-top: none; margin-top: 0; }
+  .jcard { background: var(--surface); border: 0.5px solid var(--border); border-radius: 10px; margin-bottom: 8px; overflow: hidden; }
+  .jhdr { padding: 10px 14px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+  .jhdr:hover { background: var(--bg); }
+  .jbody { display: none; padding: 12px 14px; border-top: 0.5px solid var(--border); }
+  .jbody.open { display: block; }
+  .spill { font-size: 11px; padding: 2px 8px; border-radius: 20px; }
+  .sp { color: var(--amber); background: var(--amber-bg); }
+  .spar { color: var(--blue); background: var(--blue-bg); }
+  .sd { color: var(--green); background: var(--green-bg); }
+  .mprev { font-size: 11px; color: var(--text-3); line-height: 1.9; margin-bottom: 10px; }
+  .mrow { background: var(--bg); border-radius: 8px; border: 0.5px solid var(--border-light); padding: 8px 10px; margin-bottom: 6px; }
+  .mlbl { font-size: 11px; color: var(--text-3); margin-bottom: 5px; }
+  .spair { display: flex; gap: 8px; align-items: flex-end; }
+  .spair .sf { flex: 1; }
+  .vsep { font-size: 11px; color: var(--text-3); padding-bottom: 8px; }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+  .tbtn { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; border: 0.5px solid var(--border); background: var(--surface); color: var(--text-2); transition: all .15s; }
+  .tbtn:hover { border-color: var(--accent); color: var(--accent); }
+  .tbtn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .pickform { background: #f0f7ff; border-radius: 8px; padding: 10px 12px; }
+  .pickform-admin { background: #fff8e8; }
 
-  /* ── RESULT COMPARISON ── */
-  .picks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px,1fr)); gap: 5px; margin-top: 6px; }
-  .pick-card { background: var(--bg); border-radius: 8px; padding: 8px 10px; border-left: 3px solid var(--border); }
-  .pick-card.exact { border-left-color: #639922; }
-  .pick-card.winner { border-left-color: #378add; }
-  .pick-card .pc-name { font-size: 12px; font-weight: 600; color: var(--accent); margin-bottom: 2px; }
-  .pick-card .pc-score { font-size: 13px; font-weight: 600; }
-  .pick-card .pc-class { font-size: 11px; color: var(--text-2); margin-top: 1px; }
-  .pick-card .pc-pts { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+  /* PICK CARDS */
+  .pgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(105px,1fr)); gap: 5px; margin-top: 6px; }
+  .pcard { background: var(--bg); border-radius: 8px; padding: 8px 10px; border-left: 3px solid var(--border); }
+  .pcard.exact { border-left-color: #639922; }
+  .pcard.winner { border-left-color: #378add; }
+  .pcn { font-size: 12px; font-weight: 600; color: var(--accent); margin-bottom: 2px; }
+  .pcs { font-size: 13px; font-weight: 600; }
+  .pcc { font-size: 11px; color: var(--text-2); margin-top: 1px; }
+  .pcp { font-size: 11px; color: var(--text-3); margin-top: 2px; }
 
-  /* ── PRE-TORNEO ── */
-  .participant-block { background: var(--bg); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; }
-  .participant-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--accent); }
+  /* PRE-TORNEO */
+  .pblock { background: var(--bg); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; }
+  .pbhdr { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: var(--accent); }
 
-  /* ── LOADING ── */
-  .loading { text-align: center; padding: 40px 20px; color: var(--text-3); font-size: 14px; }
-
-  /* ── TOAST ── */
-  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--accent); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 13px; font-weight: 500; z-index: 999; transition: transform 0.3s; pointer-events: none; }
+  /* TOAST */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--accent); color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 13px; font-weight: 500; z-index: 999; transition: transform .3s; pointer-events: none; }
   .toast.show { transform: translateX(-50%) translateY(0); }
 
+  /* PROGRESS */
+  .prog-bar { height: 3px; background: var(--border); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+  .prog-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width .3s; }
+
   @media (max-width: 560px) {
-    .grid2, .grid3, .grid4 { grid-template-columns: 1fr; }
+    .grid2,.grid3,.grid4 { grid-template-columns: 1fr; }
     .nav-btn { padding: 9px 10px; font-size: 11px; }
     .page { padding: 10px 12px; }
   }
@@ -181,43 +156,42 @@
 </head>
 <body>
 
-<!-- ── LOGIN ── -->
-<div id="auth-screen" class="auth-screen">
+<!-- LOGIN -->
+<div id="auth-wrap" class="auth-wrap">
   <div class="auth-card">
     <div class="auth-logo">⚽</div>
     <div class="auth-title">Polla Mundial 2026</div>
     <div class="auth-sub">Federismo · Inicia sesión para continuar</div>
-    <div id="auth-error" class="auth-error"></div>
-    <div class="field"><label>Email</label><input type="email" id="login-email" placeholder="tu@email.com" autocomplete="email"></div>
-    <div class="field"><label>Contraseña</label><input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"></div>
-    <button class="btn-primary" onclick="doLogin()">Ingresar</button>
+    <div id="auth-err" class="auth-err"></div>
+    <div class="f"><label>Email</label><input type="email" id="li-email" placeholder="tu@federismo.com" autocomplete="email"></div>
+    <div class="f"><label>Contraseña</label><input type="password" id="li-pass" placeholder="••••••••" autocomplete="current-password"></div>
+    <button class="btn-login" onclick="doLogin()">Ingresar</button>
   </div>
 </div>
 
-<!-- ── APP ── -->
+<!-- APP -->
 <div id="app">
-  <div class="app-header">
-    <div class="app-header-left">
+  <div class="hdr">
+    <div>
       <h1>⚽ Polla Mundial 2026 · Federismo</h1>
-      <div class="user-info" id="header-user"></div>
+      <div class="uinfo" id="hdr-user"></div>
     </div>
-    <button class="logout-btn" onclick="doLogout()">Cerrar sesión</button>
+    <button class="hdr-logout" onclick="doLogout()">Cerrar sesión</button>
   </div>
   <div class="nav">
     <button class="nav-btn active" onclick="showPage('ranking',this)">Ranking</button>
     <button class="nav-btn" onclick="showPage('picks',this)">Mis picks</button>
-    <button class="nav-btn admin-only" id="nav-admin-picks" onclick="showPage('admin-picks',this)">Picks grupo</button>
-    <button class="nav-btn admin-only" id="nav-resultados" onclick="showPage('resultados',this)">Resultados</button>
+    <button class="nav-btn admin-tab" onclick="showPage('admin-picks',this)">Picks grupo</button>
+    <button class="nav-btn admin-tab" onclick="showPage('resultados',this)">Resultados</button>
     <button class="nav-btn" onclick="showPage('pretorneo',this)">Pre-torneo</button>
-    <button class="nav-btn admin-only" id="nav-admin-pre" onclick="showPage('admin-pretorneo',this)">Admin pre-torneo</button>
+    <button class="nav-btn admin-tab" onclick="showPage('admin-pre',this)">Admin pre-torneo</button>
     <button class="nav-btn" onclick="showPage('reglas',this)">Reglas</button>
   </div>
 
-  <!-- RANKING -->
   <div id="page-ranking" class="page active">
-    <div class="section-label">Tabla de posiciones</div>
+    <div class="slabel">Tabla de posiciones</div>
     <div class="card" style="padding:0;overflow:hidden;">
-      <table class="ranking-table">
+      <table class="rtable">
         <thead><tr>
           <th style="width:36px;">#</th><th>Jugador</th>
           <th style="text-align:right;">Pts</th>
@@ -225,77 +199,71 @@
           <th style="text-align:right;">Ganadores</th>
           <th style="text-align:right;">Jugados</th>
         </tr></thead>
-        <tbody id="ranking-body"><tr><td colspan="6" class="loading">Cargando…</td></tr></tbody>
+        <tbody id="ranking-body"><tr><td colspan="6" style="text-align:center;padding:20px;color:var(--text-3);">Cargando…</td></tr></tbody>
       </table>
     </div>
-    <div class="section-label">Resumen</div>
+    <div class="slabel">Resumen</div>
     <div class="grid4">
-      <div class="stat-card"><div class="stat-val" id="stat-matches">—</div><div class="stat-lbl">Partidos jugados</div></div>
-      <div class="stat-card"><div class="stat-val" id="stat-phase">Grupos</div><div class="stat-lbl">Fase actual</div></div>
-      <div class="stat-card"><div class="stat-val" id="stat-leader">—</div><div class="stat-lbl">Líder</div></div>
-      <div class="stat-card"><div class="stat-val" id="stat-gap">—</div><div class="stat-lbl">Diferencia 1°/2°</div></div>
+      <div class="sc"><div class="sv" id="st-m">0</div><div class="sl">Partidos jugados</div></div>
+      <div class="sc"><div class="sv" id="st-p">Grupos</div><div class="sl">Fase actual</div></div>
+      <div class="sc"><div class="sv" id="st-l">—</div><div class="sl">Líder</div></div>
+      <div class="sc"><div class="sv" id="st-g">—</div><div class="sl">Diferencia 1°/2°</div></div>
     </div>
   </div>
 
-  <!-- MIS PICKS -->
   <div id="page-picks" class="page">
-    <div class="alert-info alert">Ingresa tus pronósticos antes del primer partido de cada jornada.</div>
+    <div class="alert ai">Ingresa tus pronósticos antes del primer partido de cada jornada. Puedes editarlos libremente hasta que se ingresen los resultados.</div>
     <div id="my-picks-list"></div>
   </div>
 
-  <!-- ADMIN: PICKS DEL GRUPO -->
   <div id="page-admin-picks" class="page">
-    <div class="alert-warning alert">Vista admin — Picks de todos los participantes.</div>
+    <div class="alert aw">Vista admin — Ingresa o edita picks de cualquier participante.</div>
     <div id="admin-picks-list"></div>
   </div>
 
-  <!-- ADMIN: RESULTADOS -->
   <div id="page-resultados" class="page">
-    <div class="alert-warning alert">Ingresa los resultados reales al terminar los partidos. Los puntos se calculan automáticamente.</div>
+    <div class="alert aw">Ingresa los resultados reales al terminar los partidos.</div>
     <div id="results-list"></div>
   </div>
 
-  <!-- PRE-TORNEO (vista participante) -->
   <div id="page-pretorneo" class="page">
-    <div class="alert-info alert">Pronósticos que se llenan <strong>una sola vez</strong> antes del 11 de junio.</div>
-    <div class="card" id="my-pretorneo-form"></div>
+    <div class="alert ai">Pronósticos que se llenan <strong>una sola vez</strong> antes del 11 de junio.</div>
+    <div id="my-pre-form"></div>
   </div>
 
-  <!-- ADMIN: PRE-TORNEO -->
-  <div id="page-admin-pretorneo" class="page">
-    <div class="alert-warning alert">Vista admin — Pronósticos pre-torneo de todos + resultados reales.</div>
+  <div id="page-admin-pre" class="page">
+    <div class="alert aw">Vista admin — Pronósticos pre-torneo + resultados reales del torneo.</div>
     <div class="card">
-      <div class="card-title">✅ Resultados reales del torneo</div>
+      <div class="ctitle">✅ Resultados reales del torneo</div>
       <div class="grid2">
-        <div><label>Campeón</label><input type="text" id="real-champion" placeholder="País campeón"></div>
-        <div><label>Finalista</label><input type="text" id="real-finalist" placeholder="País finalista"></div>
-        <div><label>Tercer lugar</label><input type="text" id="real-third" placeholder="País tercer lugar"></div>
-        <div><label>Goleador del torneo</label><input type="text" id="real-topscorer" placeholder="Nombre del jugador"></div>
+        <div><label>Campeón</label><input type="text" id="rc" placeholder="País campeón"></div>
+        <div><label>Finalista</label><input type="text" id="rf" placeholder="País finalista"></div>
+        <div><label>Tercer lugar</label><input type="text" id="rt" placeholder="País tercer lugar"></div>
+        <div><label>Goleador</label><input type="text" id="rg" placeholder="Nombre del jugador"></div>
       </div>
-      <div style="margin-top:12px;"><button class="btn btn-accent" onclick="saveRealTorneo()">Guardar resultados reales</button></div>
+      <div style="margin-top:12px;"><button class="btn ba" onclick="saveRealTorneo()">Guardar resultados reales</button></div>
     </div>
-    <div id="pretorneo-results-display"></div>
+    <div id="admin-pre-display"></div>
   </div>
 
-  <!-- REGLAS -->
   <div id="page-reglas" class="page">
-    <div class="section-label">Sistema de puntos</div>
-    <div class="card"><div class="card-title">Fase de grupos</div>
-      <p style="font-size:13px;color:var(--text-2);line-height:1.9;">&#8226; Acertar resultado (quién gana o empate): <strong>1 punto</strong><br>&#8226; Acertar marcador exacto: <strong>+2 pts adicionales</strong> → total <strong>3 pts</strong></p></div>
-    <div class="card"><div class="card-title">16avos de final</div>
-      <p style="font-size:13px;color:var(--text-2);line-height:1.9;">&#8226; Clasificado correcto: <strong>2 pts</strong> · Marcador exacto (90'): <strong>+3 pts</strong> → total <strong>5 pts</strong></p></div>
-    <div class="card"><div class="card-title">Octavos de final</div>
-      <p style="font-size:13px;color:var(--text-2);line-height:1.9;">&#8226; Clasificado correcto: <strong>3 pts</strong> · Marcador exacto (90'): <strong>+4 pts</strong> → total <strong>7 pts</strong></p></div>
-    <div class="card"><div class="card-title">Cuartos de final</div>
-      <p style="font-size:13px;color:var(--text-2);line-height:1.9;">&#8226; Clasificado correcto: <strong>4 pts</strong> · Marcador exacto (90'): <strong>+6 pts</strong> → total <strong>10 pts</strong></p></div>
-    <div class="card"><div class="card-title">Semifinales</div>
-      <p style="font-size:13px;color:var(--text-2);line-height:1.9;">&#8226; Clasificado correcto: <strong>5 pts</strong> · Marcador exacto (90'): <strong>+8 pts</strong> → total <strong>13 pts</strong></p></div>
-    <div class="card"><div class="card-title">Final</div>
-      <p style="font-size:13px;color:var(--text-2);line-height:1.9;">&#8226; Campeón correcto: <strong>6 pts</strong> · Marcador exacto (90'): <strong>+10 pts</strong> → total <strong>16 pts</strong></p></div>
-    <div class="card"><div class="card-title">Pronósticos pre-torneo</div>
+    <div class="slabel">Sistema de puntos</div>
+    <div class="card"><div class="ctitle">Fase de grupos</div>
+      <p style="font-size:13px;color:var(--text-2);line-height:1.9;">• Acertar resultado (quién gana o empate): <strong>1 punto</strong><br>• Acertar marcador exacto: <strong>+2 pts</strong> → total <strong>3 pts</strong></p></div>
+    <div class="card"><div class="ctitle">16avos de final</div>
+      <p style="font-size:13px;color:var(--text-2);line-height:1.9;">• Clasificado correcto: <strong>2 pts</strong> · Marcador exacto (90'): <strong>+3 pts</strong> → total <strong>5 pts</strong></p></div>
+    <div class="card"><div class="ctitle">Octavos de final</div>
+      <p style="font-size:13px;color:var(--text-2);line-height:1.9;">• Clasificado correcto: <strong>3 pts</strong> · Marcador exacto (90'): <strong>+4 pts</strong> → total <strong>7 pts</strong></p></div>
+    <div class="card"><div class="ctitle">Cuartos de final</div>
+      <p style="font-size:13px;color:var(--text-2);line-height:1.9;">• Clasificado correcto: <strong>4 pts</strong> · Marcador exacto (90'): <strong>+6 pts</strong> → total <strong>10 pts</strong></p></div>
+    <div class="card"><div class="ctitle">Semifinales</div>
+      <p style="font-size:13px;color:var(--text-2);line-height:1.9;">• Clasificado correcto: <strong>5 pts</strong> · Marcador exacto (90'): <strong>+8 pts</strong> → total <strong>13 pts</strong></p></div>
+    <div class="card"><div class="ctitle">Final</div>
+      <p style="font-size:13px;color:var(--text-2);line-height:1.9;">• Campeón correcto: <strong>6 pts</strong> · Marcador exacto (90'): <strong>+10 pts</strong> → total <strong>16 pts</strong></p></div>
+    <div class="card"><div class="ctitle">Pre-torneo</div>
       <p style="font-size:13px;color:var(--text-2);line-height:1.9;">Campeón: <strong>10 pts</strong> · Finalista: <strong>5 pts</strong> · Tercer lugar: <strong>3 pts</strong> · Goleador: <strong>8 pts</strong></p></div>
-    <div class="card" style="border-color:var(--green-border);"><div class="card-title">Regla playoffs</div>
-      <p style="font-size:13px;color:var(--text-2);line-height:1.8;">El marcador se evalúa a los <strong>90 minutos</strong>. Si el partido termina en alargue o penales, el clasificado correcto igual suma sus puntos aunque el marcador no coincida.</p></div>
+    <div class="card" style="border-color:var(--green-b);"><div class="ctitle">Regla playoffs</div>
+      <p style="font-size:13px;color:var(--text-2);line-height:1.8;">El marcador se evalúa a los <strong>90 minutos</strong>. Si el partido se define en alargue o penales, el clasificado correcto igual suma sus puntos aunque el marcador no coincida.</p></div>
   </div>
 </div>
 
@@ -305,11 +273,10 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, getDocs }
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs }
   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
-// ── FIREBASE CONFIG ──────────────────────────────────────────────
-const firebaseConfig = {
+const FC = {
   apiKey: "AIzaSyBIIZ6n4Vsa-gEv08SenDGLpmZWXVGdKpA",
   authDomain: "fifa-world-cup-2026-federismo.firebaseapp.com",
   projectId: "fifa-world-cup-2026-federismo",
@@ -318,35 +285,30 @@ const firebaseConfig = {
   appId: "1:591544881993:web:eff4b70cf85bd652a98098"
 };
 const ADMIN_UID = 'JlU7mhRw0scPLqtv3Isd2fLGgrE2';
+const app = initializeApp(FC);
+const auth = getAuth(app);
+const db   = getFirestore(app);
 
-const fbApp = initializeApp(firebaseConfig);
-const auth  = getAuth(fbApp);
-const db    = getFirestore(fbApp);
-
-// ── DATOS ────────────────────────────────────────────────────────
-const PARTICIPANTS = [
-  {name:'Norman', email:'norman@federismo.com'},
-  {name:'Nacho',  email:'nacho@federismo.com'},
-  {name:'Kily',   email:'kily@federismo.com'},
-  {name:'Dustin', email:'dustin@federismo.com'},
-  {name:'Fede',   email:'fede@federismo.com'},
-  {name:'Dani',   email:'dani@federismo.com'},
-  {name:'Mr. Chris', email:'mrchris@federismo.com'}
+const PARTS = [
+  {name:'Norman',   email:'norman@federismo.com'},
+  {name:'Nacho',    email:'nacho@federismo.com'},
+  {name:'Kily',     email:'kily@federismo.com'},
+  {name:'Dustin',   email:'dustin@federismo.com'},
+  {name:'Fede',     email:'fede@federismo.com'},
+  {name:'Dani',     email:'dani@federismo.com'},
+  {name:'Mr. Chris',email:'mrchris@federismo.com'}
 ];
-const AB = ['#EEEDFE','#E1F5EE','#FAECE7','#FBEAF0','#E6F1FB','#FAEEDA','#EAF3DE'];
-const AF = ['#3C3489','#085041','#712B13','#72243E','#0C447C','#633806','#27500A'];
-const PHASE_LABELS  = {groups:'Grupos',r32:'16avos',r16:'Octavos',qf:'Cuartos',sf:'Semis',final:'Final'};
-const PHASE_TITLES  = {
-  groups:'Fase de grupos',
-  r32:'16avos de final — 28 jun al 3 jul',
-  r16:'Octavos de final — 4 al 7 jul',
-  qf:'Cuartos de final — 9 al 12 jul',
-  sf:'Semifinales — 14 al 17 jul',
-  final:'Final — 19 jul · MetLife Stadium, Nueva Jersey'
+const AB=['#EEEDFE','#E1F5EE','#FAECE7','#FBEAF0','#E6F1FB','#FAEEDA','#EAF3DE'];
+const AF=['#3C3489','#085041','#712B13','#72243E','#0C447C','#633806','#27500A'];
+const PL={groups:'Grupos',r32:'16avos',r16:'Octavos',qf:'Cuartos',sf:'Semis',final:'Final'};
+const PT={
+  groups:'Fase de grupos',r32:'16avos de final — 28 jun al 3 jul',
+  r16:'Octavos de final — 4 al 7 jul',qf:'Cuartos de final — 9 al 12 jul',
+  sf:'Semifinales — 14 al 17 jul',final:'Final — 19 jul · MetLife Stadium, Nueva Jersey'
 };
-const PHASE_PTS = {groups:[1,2],r32:[2,3],r16:[3,4],qf:[4,6],sf:[5,8],final:[6,10]};
+const PP={groups:[1,2],r32:[2,3],r16:[3,4],qf:[4,6],sf:[5,8],final:[6,10]};
 
-const CAL = [
+const CAL=[
   {id:'gj1a',name:'Fecha 1 · Grupos A–D',phase:'groups',matches:[
     {h:'México',a:'Sudáfrica',d:'Mié 11 jun',t:'15:00',g:'A'},
     {h:'Corea del Sur',a:'Rep. Checa',d:'Mié 11 jun',t:'22:00',g:'A'},
@@ -491,260 +453,249 @@ const CAL = [
 ];
 
 // ── STATE ────────────────────────────────────────────────────────
-let currentUser = null;
-let isAdmin = false;
-let currentUserName = '';
-let openPickJornada = null;
-let activeParticipantIdx = 0; // solo para admin
+let CU=null, isAdmin=false, CUName='';
+let openJ=null; // jornada abierta en Mis picks
+let openAJ=null; // jornada abierta en admin picks
+let openRJ=null; // jornada abierta en resultados
+let adminPI=0; // índice participante activo en admin picks
 
 // ── AUTH ─────────────────────────────────────────────────────────
 window.doLogin = async () => {
-  const email = document.getElementById('login-email').value.trim();
-  const pass  = document.getElementById('login-pass').value;
-  const errEl = document.getElementById('auth-error');
-  errEl.style.display = 'none';
-  try {
-    await signInWithEmailAndPassword(auth, email, pass);
-  } catch(e) {
-    errEl.textContent = 'Email o contraseña incorrectos.';
-    errEl.style.display = 'block';
-  }
+  const email=document.getElementById('li-email').value.trim();
+  const pass=document.getElementById('li-pass').value;
+  const err=document.getElementById('auth-err');
+  err.style.display='none';
+  try { await signInWithEmailAndPassword(auth,email,pass); }
+  catch(e){ err.textContent='Email o contraseña incorrectos.'; err.style.display='block'; }
 };
+window.doLogout = ()=>signOut(auth);
+document.getElementById('li-pass').addEventListener('keydown',e=>{if(e.key==='Enter')window.doLogin();});
 
-window.doLogout = () => signOut(auth);
-
-document.getElementById('login-pass').addEventListener('keydown', e => {
-  if(e.key === 'Enter') window.doLogin();
-});
-
-onAuthStateChanged(auth, user => {
-  if(user) {
-    currentUser = user;
-    isAdmin = user.uid === ADMIN_UID;
-    const p = PARTICIPANTS.find(x => x.email === user.email);
-    currentUserName = p ? p.name : user.email;
-    document.getElementById('auth-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    document.getElementById('header-user').textContent =
-      currentUserName + (isAdmin ? ' · Admin' : '');
-    // show admin tabs
-    document.querySelectorAll('.admin-only').forEach(el => {
-      el.style.display = isAdmin ? 'block' : 'none';
-    });
-    initApp();
+onAuthStateChanged(auth,user=>{
+  if(user){
+    CU=user; isAdmin=user.uid===ADMIN_UID;
+    const p=PARTS.find(x=>x.email===user.email);
+    CUName=p?p.name:user.email;
+    document.getElementById('auth-wrap').style.display='none';
+    document.getElementById('app').style.display='block';
+    document.getElementById('hdr-user').textContent=CUName+(isAdmin?' · Admin':'');
+    document.querySelectorAll('.admin-tab').forEach(el=>el.style.display=isAdmin?'block':'none');
+    renderRanking();
   } else {
-    currentUser = null;
-    document.getElementById('auth-screen').style.display = 'flex';
-    document.getElementById('app').style.display = 'none';
+    CU=null;
+    document.getElementById('auth-wrap').style.display='flex';
+    document.getElementById('app').style.display='none';
   }
 });
 
-// ── NAVIGATION ───────────────────────────────────────────────────
-window.showPage = (id, btn) => {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+// ── NAV ──────────────────────────────────────────────────────────
+window.showPage=(id,btn)=>{
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
-  if(btn) btn.classList.add('active');
-  if(id === 'picks') renderMyPicksPage();
-  if(id === 'admin-picks') renderAdminPicksPage();
-  if(id === 'resultados') renderResultsPage();
-  if(id === 'pretorneo') renderMyPretorneo();
-  if(id === 'admin-pretorneo') renderAdminPretorneo();
-  if(id === 'ranking') renderRanking();
+  if(btn)btn.classList.add('active');
+  if(id==='picks') renderMyPicksPage();
+  if(id==='admin-picks') renderAdminPicksPage();
+  if(id==='resultados') renderResultsPage();
+  if(id==='pretorneo') renderMyPre();
+  if(id==='admin-pre') renderAdminPre();
+  if(id==='ranking') renderRanking();
 };
-
-// ── INIT ─────────────────────────────────────────────────────────
-function initApp() {
-  renderRanking();
-  // live ranking updates
-  onSnapshot(collection(db, 'results'), () => renderRanking());
-  onSnapshot(collection(db, 'pretorneo'), () => renderRanking());
-}
 
 // ── HELPERS ──────────────────────────────────────────────────────
-function gtag(g) {
-  if(!g) return '';
-  return `<span class="gtag gtag-${g}">Grupo ${g}</span>`;
+function gt(g){return g?`<span class="gtag g${g}">Grupo ${g}</span>`:'';}
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+function badgeCls(ph){const m={groups:'bg',r32:'br32',r16:'br16',qf:'bqf',sf:'bsf',final:'bfin'};return m[ph]||'bg';}
+function calcPts(pk,r,phase){
+  if(!pk||pk.h===undefined||!r)return{pts:0,cls:'',lbl:''};
+  const [bp,xp]=PP[phase]; const ig=phase==='groups';
+  if(ig){
+    const rw=r.h>r.a?'h':(r.a>r.h?'a':'d');
+    const pw=pk.h>pk.a?'h':(pk.a>pk.h?'a':'d');
+    if(pk.h===r.h&&pk.a===r.a)return{pts:bp+xp,cls:'exact',lbl:`+${bp+xp} pts`};
+    if(pw===rw)return{pts:bp,cls:'winner',lbl:`+${bp} pt`};
+    return{pts:0,cls:'',lbl:'0 pts'};
+  } else {
+    const ex=pk.h===r.h&&pk.a===r.a;
+    const cl=r.c&&pk.c===r.c;
+    if(ex&&cl)return{pts:bp+xp,cls:'exact',lbl:`+${bp+xp} pts`};
+    if(ex)return{pts:xp,cls:'exact',lbl:`+${xp} pts (90')`};
+    if(cl)return{pts:bp,cls:'winner',lbl:`+${bp} pts (clasif.)`};
+    return{pts:0,cls:'',lbl:'0 pts'};
+  }
 }
 
-function jornadaStatus(j, allPicks, allResults) {
-  const res = allResults[j.id] || {};
-  const doneCount = j.matches.filter((_,i) => res[i] !== undefined).length;
-  if(doneCount === j.matches.length && doneCount > 0) return 'done';
-  const myPicks = allPicks[j.id] || {};
-  const hasPicks = Object.keys(myPicks).length > 0;
-  if(doneCount > 0 || hasPicks) return 'partial';
-  return 'pending';
+// ── LOADERS ──────────────────────────────────────────────────────
+async function loadAllResults(){
+  const s=await getDocs(collection(db,'results'));
+  const o={};s.forEach(d=>{o[d.id]=d.data();});return o;
 }
-
-function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
+async function loadAllPicks(){
+  const s=await getDocs(collection(db,'picks'));
+  const o={};
+  s.forEach(d=>{
+    const[jid,name]=d.id.split('__');
+    if(!o[jid])o[jid]={};
+    o[jid][name]=d.data();
+  });
+  return o;
+}
+async function loadMyPicksData(){
+  const o={};
+  for(const j of CAL){
+    const s=await getDoc(doc(db,'picks',`${j.id}__${CUName}`));
+    if(s.exists())o[j.id]=s.data();
+  }
+  return o;
 }
 
 // ── RANKING ──────────────────────────────────────────────────────
-async function renderRanking() {
-  try {
-    // load all results
-    const resultsSnap = await getDocs(collection(db, 'results'));
-    const allResults = {};
-    resultsSnap.forEach(d => { allResults[d.id] = d.data(); });
-
-    // load all picks (per jornada per user)
-    const picksSnap = await getDocs(collection(db, 'picks'));
-    const allPicks = {}; // allPicks[jid][name][mi]
-    picksSnap.forEach(d => {
-      const [jid, name] = d.id.split('__');
-      if(!allPicks[jid]) allPicks[jid] = {};
-      allPicks[jid][name] = d.data();
-    });
-
-    // load pretorneo
-    const preSnap = await getDocs(collection(db, 'pretorneo'));
-    const prePicks = {};
-    preSnap.forEach(d => { prePicks[d.id] = d.data(); });
-    const realDoc = await getDoc(doc(db, 'config', 'realTorneo'));
-    const realTorneo = realDoc.exists() ? realDoc.data() : {};
-
-    // calculate
-    const pts = PARTICIPANTS.map(() => ({total:0,exact:0,winner:0,played:0}));
-    CAL.forEach(j => {
-      const res = allResults[j.id] || {};
-      const isGroups = j.phase === 'groups';
-      const [bp, xp] = PHASE_PTS[j.phase];
-      j.matches.forEach((_,mi) => {
-        const r = res[mi+''];
-        if(!r) return;
-        PARTICIPANTS.forEach((p,pi) => {
-          const jPicks = allPicks[j.id] || {};
-          const pk = jPicks[p.name] && jPicks[p.name][mi+''];
-          if(!pk) return;
+async function renderRanking(){
+  try{
+    const[allRes,allPicks]=await Promise.all([loadAllResults(),loadAllPicks()]);
+    const preSnap=await getDocs(collection(db,'pretorneo'));
+    const prePicks={};preSnap.forEach(d=>{prePicks[d.id]=d.data();});
+    const realDoc=await getDoc(doc(db,'config','realTorneo'));
+    const real=realDoc.exists()?realDoc.data():{};
+    const pts=PARTS.map(()=>({total:0,exact:0,winner:0,played:0}));
+    CAL.forEach(j=>{
+      const res=allRes[j.id]||{};
+      const [bp,xp]=PP[j.phase]; const ig=j.phase==='groups';
+      j.matches.forEach((_,mi)=>{
+        const r=res[mi+''];if(!r)return;
+        PARTS.forEach((p,pi)=>{
+          const pk=(allPicks[j.id]||{})[p.name]?.[mi+''];
+          if(!pk)return;
           pts[pi].played++;
-          if(isGroups) {
-            const rw = r.h>r.a?'h':(r.a>r.h?'a':'d');
-            const pw = pk.h>pk.a?'h':(pk.a>pk.h?'a':'d');
-            if(pk.h===r.h&&pk.a===r.a){pts[pi].total+=bp+xp;pts[pi].exact++;pts[pi].winner++;}
-            else if(pw===rw){pts[pi].total+=bp;pts[pi].winner++;}
-          } else {
-            const ex = pk.h===r.h&&pk.a===r.a;
-            const cl = r.c&&pk.c===r.c;
-            if(ex&&cl){pts[pi].total+=bp+xp;pts[pi].exact++;pts[pi].winner++;}
-            else if(ex){pts[pi].total+=xp;pts[pi].exact++;}
-            else if(cl){pts[pi].total+=bp;pts[pi].winner++;}
-          }
+          const{pts:pt,cls}=calcPts(pk,r,j.phase);
+          pts[pi].total+=pt;
+          if(cls==='exact'){pts[pi].exact++;pts[pi].winner++;}
+          else if(cls==='winner')pts[pi].winner++;
         });
       });
     });
-
-    const m=(a,b)=>a&&b&&a.toLowerCase()===b.toLowerCase();
-    if(realTorneo.champion) {
-      PARTICIPANTS.forEach((p,pi) => {
-        const pre = prePicks[p.name] || {};
-        if(m(pre.champion,realTorneo.champion)) pts[pi].total+=10;
-        if(m(pre.finalist,realTorneo.finalist)) pts[pi].total+=5;
-        if(m(pre.third,realTorneo.third)) pts[pi].total+=3;
-        if(m(pre.topscorer,realTorneo.topscorer)) pts[pi].total+=8;
+    const mc=(a,b)=>a&&b&&a.toLowerCase()===b.toLowerCase();
+    if(real.champion){
+      PARTS.forEach((p,pi)=>{
+        const pre=prePicks[p.name]||{};
+        if(mc(pre.champion,real.champion))pts[pi].total+=10;
+        if(mc(pre.finalist,real.finalist))pts[pi].total+=5;
+        if(mc(pre.third,real.third))pts[pi].total+=3;
+        if(mc(pre.topscorer,real.topscorer))pts[pi].total+=8;
       });
     }
-
-    const ranked = PARTICIPANTS.map((p,i)=>({...p,idx:i,...pts[i]}))
-      .sort((a,b)=>b.total-a.total||b.exact-a.exact);
-    const medals = ['🥇','🥈','🥉'];
-    document.getElementById('ranking-body').innerHTML = ranked.map((p,pos) => `
+    const ranked=PARTS.map((p,i)=>({...p,idx:i,...pts[i]})).sort((a,b)=>b.total-a.total||b.exact-a.exact);
+    const medals=['🥇','🥈','🥉'];
+    document.getElementById('ranking-body').innerHTML=ranked.map((p,pos)=>`
       <tr>
-        <td><span class="rank-num ${pos===0?'rank-gold':pos===1?'rank-silver':pos===2?'rank-bronze':''}">${pos<3?medals[pos]:pos+1}</span></td>
-        <td><div class="flex-row"><div class="avatar" style="background:${AB[p.idx]};color:${AF[p.idx]};">${p.name.substring(0,2).toUpperCase()}</div>${p.name}</div></td>
-        <td style="text-align:right;"><span class="pts-pill">${p.total}</span></td>
+        <td><span class="rnum ${pos===0?'rg':pos===1?'rs':pos===2?'rb':''}">${pos<3?medals[pos]:pos+1}</span></td>
+        <td><div class="frow"><div class="av" style="background:${AB[p.idx]};color:${AF[p.idx]};">${p.name.substring(0,2).toUpperCase()}</div>${p.name}</div></td>
+        <td style="text-align:right;"><span class="ppill">${p.total}</span></td>
         <td style="text-align:right;color:var(--text-2);">${p.exact}</td>
         <td style="text-align:right;color:var(--text-2);">${p.winner}</td>
         <td style="text-align:right;color:var(--text-3);">${p.played}</td>
       </tr>`).join('');
-
-    const totalM = Object.values(allResults).reduce((s,r) => s+Object.keys(r).length, 0);
-    document.getElementById('stat-matches').textContent = totalM;
-    const lastPhase = [...CAL].reverse().find(j => allResults[j.id] && Object.keys(allResults[j.id]).length > 0);
-    document.getElementById('stat-phase').textContent = lastPhase ? PHASE_LABELS[lastPhase.phase] : 'Grupos';
-    document.getElementById('stat-leader').textContent = ranked[0]?.total > 0 ? ranked[0].name : '—';
-    const gap = ranked.length > 1 ? ranked[0].total - ranked[1].total : 0;
-    document.getElementById('stat-gap').textContent = ranked[0]?.total > 0 ? gap+' pts' : '—';
-  } catch(e) { console.error(e); }
+    const tm=Object.values(allRes).reduce((s,r)=>s+Object.keys(r).length,0);
+    document.getElementById('st-m').textContent=tm;
+    const lp=[...CAL].reverse().find(j=>allRes[j.id]&&Object.keys(allRes[j.id]).length>0);
+    document.getElementById('st-p').textContent=lp?PL[lp.phase]:'Grupos';
+    document.getElementById('st-l').textContent=ranked[0]?.total>0?ranked[0].name:'—';
+    const gap=ranked.length>1?ranked[0].total-ranked[1].total:0;
+    document.getElementById('st-g').textContent=ranked[0]?.total>0?gap+' pts':'—';
+  }catch(e){console.error(e);}
 }
 
 // ── MIS PICKS ────────────────────────────────────────────────────
-async function renderMyPicksPage() {
-  const myPicks = await loadMyPicks();
-  const allResults = await loadAllResults();
-  let html = '';
-  let lastPhase = null;
-  CAL.forEach(j => {
-    if(j.phase !== lastPhase) {
-      html += `<div class="phase-divider">${PHASE_TITLES[j.phase]}</div>`;
-      lastPhase = j.phase;
-    }
-    const jPicks = myPicks[j.id] || {};
-    const hasAny = Object.keys(jPicks).length > 0;
-    const res = allResults[j.id] || {};
-    const hasResults = j.matches.some((_,i) => res[i+''] !== undefined);
-    const st = hasResults && Object.keys(res).length === j.matches.length ? 'done' : hasAny || hasResults ? 'partial' : 'pending';
-    const isOpen = openPickJornada === j.id;
-    html += `<div class="jornada-card">
-      <div class="jornada-header" onclick="toggleMyPick('${j.id}')">
-        <div class="flex-row">
-          <span class="badge badge-${j.phase}">${PHASE_LABELS[j.phase]}</span>
+async function renderMyPicksPage(){
+  const[myPicks,allRes]=await Promise.all([loadMyPicksData(),loadAllResults()]);
+  let html=''; let lastPh=null;
+  CAL.forEach(j=>{
+    if(j.phase!==lastPh){html+=`<div class="pdiv">${PT[j.phase]}</div>`;lastPh=j.phase;}
+    const jPicks=myPicks[j.id]||{};
+    const res=allRes[j.id]||{};
+    const filled=Object.keys(jPicks).length;
+    const total=j.matches.length;
+    const hasRes=Object.keys(res).length>0;
+    const pct=total>0?Math.round(filled/total*100):0;
+    const st=hasRes&&Object.keys(res).length===total?'done':filled>0||hasRes?'partial':'pending';
+    const isOpen=openJ===j.id;
+    html+=`<div class="jcard">
+      <div class="jhdr" onclick="toggleMyJ('${j.id}')">
+        <div class="frow">
+          <span class="badge ${badgeCls(j.phase)}">${PL[j.phase]}</span>
           <strong style="font-size:13px;">${j.name}</strong>
-          <span style="font-size:10px;color:var(--text-3);">${j.matches.length} partidos</span>
+          <span style="font-size:10px;color:var(--text-3);">${filled}/${total} picks</span>
         </div>
-        <div class="flex-row">
-          <span class="status-pill ${st==='done'?'status-done':st==='partial'?'status-partial':'status-pending'}">${st==='done'?'✓ Completa':st==='partial'?'En progreso':'Pendiente'}</span>
+        <div class="frow">
+          <span class="spill ${st==='done'?'sd':st==='partial'?'spar':'sp'}">${st==='done'?'✓ Completa':st==='partial'?'En progreso':'Pendiente'}</span>
           <span style="font-size:12px;color:var(--text-3);">${isOpen?'▲':'▼'}</span>
         </div>
       </div>
-      <div class="jornada-body ${isOpen?'open':''}" id="mpbody-${j.id}">
-        <div class="match-preview">${j.matches.map(m=>`${gtag(m.g)}<span>${m.d} ${m.t} — <strong>${m.h}</strong> vs <strong>${m.a}</strong></span>`).join('<br>')}</div>
-        <div id="mpform-${j.id}"></div>
-        ${!hasResults ? `<div style="margin-top:10px;"><button class="btn btn-accent" onclick="saveMyPicks('${j.id}')">Guardar mis picks</button></div>` : ''}
+      ${filled>0&&filled<total?`<div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>`:''}
+      <div class="jbody ${isOpen?'open':''}" id="myj-${j.id}">
+        <div class="mprev">${j.matches.map(m=>`${gt(m.g)}<span>${m.d} ${m.t} — <strong>${m.h}</strong> vs <strong>${m.a}</strong></span>`).join('<br>')}</div>
+        <div id="myf-${j.id}"></div>
+        ${!hasRes?`<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn ba" onclick="saveMyPicks('${j.id}')">Guardar picks</button>
+        </div>`:'<div class="alert ag" style="margin-top:10px;">Jornada con resultados — picks cerrados.</div>'}
       </div>
     </div>`;
   });
-  document.getElementById('my-picks-list').innerHTML = html;
-  if(openPickJornada) renderMyPickForm(openPickJornada, myPicks, allResults);
+  document.getElementById('my-picks-list').innerHTML=html;
+  if(openJ){
+    const j=CAL.find(x=>x.id===openJ);
+    if(j)renderMyPickForm(j,myPicks[openJ]||{},allRes[openJ]||{});
+  }
 }
 
-window.toggleMyPick = async (jid) => {
-  openPickJornada = openPickJornada === jid ? null : jid;
+window.toggleMyJ=async(jid)=>{
+  openJ=openJ===jid?null:jid;
+  const[myPicks,allRes]=await Promise.all([loadMyPicksData(),loadAllResults()]);
+  // re-render solo el body de esta jornada sin rerenderizar toda la página
+  const j=CAL.find(x=>x.id===jid);
+  const el=document.getElementById('myj-'+jid);
+  if(el){
+    el.classList.toggle('open',openJ===jid);
+    // update chevron
+    const hdr=el.previousElementSibling?.tagName==='DIV'?el.previousElementSibling:null;
+  }
+  // update the form inside
+  if(openJ===jid&&j){
+    renderMyPickForm(j,myPicks[jid]||{},allRes[jid]||{});
+  }
+  // re-render the header chevron - simplest approach: full re-render
   await renderMyPicksPage();
 };
 
-async function renderMyPickForm(jid, myPicks, allResults) {
-  const j = CAL.find(x => x.id === jid);
-  const el = document.getElementById('mpform-'+jid);
-  if(!j || !el) return;
-  const isGroups = j.phase === 'groups';
-  const jPicks = myPicks[jid] || {};
-  const res = allResults[jid] || {};
-  const hasResults = j.matches.some((_,i) => res[i+''] !== undefined);
-
-  el.innerHTML = `<div class="my-picks-form">
-    <div style="font-size:12px;font-weight:600;color:var(--accent);margin-bottom:8px;">Tus pronósticos</div>
-    ${j.matches.map((m,mi) => {
-      const ev = jPicks[mi+''] || {};
-      const r = res[mi+''];
-      return `<div class="match-pick-row">
-        <div class="match-lbl">${gtag(m.g)} ${m.d} ${m.t} — <strong>${m.h}</strong> vs <strong>${m.a}</strong></div>
-        ${isGroups ? `
-          <div class="score-pair">
-            <div class="sf"><label>${m.h}</label><input type="number" min="0" max="20" id="mp_${mi}_h" value="${ev.h!==undefined?ev.h:''}" placeholder="0" ${hasResults?'disabled':''}></div>
-            <div class="vs-sep">vs</div>
-            <div class="sf"><label>${m.a}</label><input type="number" min="0" max="20" id="mp_${mi}_a" value="${ev.a!==undefined?ev.a:''}" placeholder="0" ${hasResults?'disabled':''}></div>
+function renderMyPickForm(j,jPicks,res){
+  const el=document.getElementById('myf-'+j.id);
+  if(!el)return;
+  const ig=j.phase==='groups';
+  const hasRes=Object.keys(res).length>0;
+  el.innerHTML=`<div class="pickform">
+    <div style="font-size:12px;font-weight:600;color:var(--accent);margin-bottom:8px;">Tus pronósticos — puedes editarlos hasta que haya resultados</div>
+    ${j.matches.map((m,mi)=>{
+      const ev=jPicks[mi+'']||{};
+      const r=res[mi+''];
+      const{cls,lbl}=r?calcPts(ev,r,j.phase):{cls:'',lbl:''};
+      return `<div class="mrow">
+        <div class="mlbl">${gt(m.g)} ${m.d} ${m.t} — <strong>${m.h}</strong> vs <strong>${m.a}</strong></div>
+        ${ig?`
+          <div class="spair">
+            <div class="sf"><label>${m.h}</label><input type="number" min="0" max="20" id="mp_${mi}_h" value="${ev.h!==undefined?ev.h:''}" placeholder="0"></div>
+            <div class="vsep">vs</div>
+            <div class="sf"><label>${m.a}</label><input type="number" min="0" max="20" id="mp_${mi}_a" value="${ev.a!==undefined?ev.a:''}" placeholder="0"></div>
           </div>
-        ` : `
+        `:`
           <div class="grid3">
-            <div><label>${m.h} (90')</label><input type="number" min="0" max="20" id="mp_${mi}_h" value="${ev.h!==undefined?ev.h:''}" placeholder="0" ${hasResults?'disabled':''}></div>
-            <div><label>${m.a} (90')</label><input type="number" min="0" max="20" id="mp_${mi}_a" value="${ev.a!==undefined?ev.a:''}" placeholder="0" ${hasResults?'disabled':''}></div>
+            <div><label>${m.h} (90')</label><input type="number" min="0" max="20" id="mp_${mi}_h" value="${ev.h!==undefined?ev.h:''}" placeholder="0"></div>
+            <div><label>${m.a} (90')</label><input type="number" min="0" max="20" id="mp_${mi}_a" value="${ev.a!==undefined?ev.a:''}" placeholder="0"></div>
             <div><label>Clasifica</label>
-              <select id="mp_${mi}_c" ${hasResults?'disabled':''}>
+              <select id="mp_${mi}_c">
                 <option value="">—</option>
                 <option value="${m.h}" ${ev.c===m.h?'selected':''}>${m.h}</option>
                 <option value="${m.a}" ${ev.c===m.a?'selected':''}>${m.a}</option>
@@ -752,172 +703,134 @@ async function renderMyPickForm(jid, myPicks, allResults) {
             </div>
           </div>
         `}
-        ${r ? renderPickResult(ev, r, j.phase) : ''}
+        ${r?`<div style="font-size:11px;margin-top:4px;font-weight:500;color:${cls==='exact'?'var(--green)':cls==='winner'?'var(--blue)':'var(--text-3)'};">
+          Resultado real: ${r.h}–${r.a}${r.c?' · '+r.c:''} — ${lbl||'0 pts'}
+        </div>`:''}
       </div>`;
     }).join('')}
   </div>`;
 }
 
-function renderPickResult(pk, r, phase) {
-  if(!pk || pk.h === undefined) return `<div style="font-size:11px;color:var(--text-3);margin-top:4px;">Sin pick registrado</div>`;
-  const isGroups = phase === 'groups';
-  const [bp,xp] = PHASE_PTS[phase];
-  let pts=0, label='0 pts', color='var(--text-3)';
-  if(isGroups) {
-    const rw=r.h>r.a?'h':(r.a>r.h?'a':'d');
-    const pw=pk.h>pk.a?'h':(pk.a>pk.h?'a':'d');
-    if(pk.h===r.h&&pk.a===r.a){pts=bp+xp;label=`✓ Exacto +${pts} pts`;color='var(--green)';}
-    else if(pw===rw){pts=bp;label=`✓ Resultado +${pts} pt`;color='var(--blue)';}
-    else{label='✗ No suma';color='var(--text-3)';}
-  } else {
-    const ex=pk.h===r.h&&pk.a===r.a;
-    const cl=r.c&&pk.c===r.c;
-    if(ex&&cl){pts=bp+xp;label=`✓ Exacto + clasif. +${pts} pts`;color='var(--green)';}
-    else if(ex){pts=xp;label=`✓ Exacto (90') +${pts} pts`;color='var(--green)';}
-    else if(cl){pts=bp;label=`✓ Clasificado +${pts} pts`;color='var(--blue)';}
-    else{label='✗ No suma';color='var(--text-3)';}
-  }
-  return `<div style="font-size:11px;color:${color};margin-top:4px;font-weight:500;">Resultado real: ${r.h}–${r.a}${r.c?' · Clasifica: '+r.c:''} — ${label}</div>`;
-}
-
-window.saveMyPicks = async (jid) => {
-  const j = CAL.find(x => x.id === jid);
-  if(!j) return;
-  const isGroups = j.phase === 'groups';
-  const data = {};
-  j.matches.forEach((_,mi) => {
-    const hEl = document.getElementById(`mp_${mi}_h`);
-    const aEl = document.getElementById(`mp_${mi}_a`);
-    if(!hEl || !aEl || hEl.value===''&&aEl.value==='') return;
-    data[mi+''] = {
-      h: parseInt(hEl.value)||0,
-      a: parseInt(aEl.value)||0,
-      c: isGroups ? null : (document.getElementById(`mp_${mi}_c`)?.value||'')
-    };
+window.saveMyPicks=async(jid)=>{
+  const j=CAL.find(x=>x.id===jid);if(!j)return;
+  const ig=j.phase==='groups';
+  const data={};
+  j.matches.forEach((_,mi)=>{
+    const hEl=document.getElementById(`mp_${mi}_h`);
+    const aEl=document.getElementById(`mp_${mi}_a`);
+    if(!hEl||!aEl)return;
+    const hv=hEl.value, av=aEl.value;
+    if(hv===''&&av==='')return;
+    data[mi+'']={h:parseInt(hv)||0,a:parseInt(av)||0,c:ig?null:(document.getElementById(`mp_${mi}_c`)?.value||'')};
   });
-  try {
-    await setDoc(doc(db, 'picks', `${jid}__${currentUserName}`), data);
+  try{
+    await setDoc(doc(db,'picks',`${jid}__${CUName}`),data,{merge:true});
     toast('Picks guardados ✓');
     renderRanking();
-  } catch(e) { toast('Error al guardar'); }
+    // Refresh form in place without closing
+    const[myPicks,allRes]=await Promise.all([loadMyPicksData(),loadAllResults()]);
+    renderMyPickForm(j,myPicks[jid]||{},allRes[jid]||{});
+    // Update counter
+    const filled=Object.keys(data).length;
+    const total=j.matches.length;
+    const counterEl=document.querySelector(`#myj-${jid}`)?.closest('.jcard')?.querySelector('.frow span:nth-child(3)');
+    if(counterEl)counterEl.textContent=`${filled}/${total} picks`;
+  }catch(e){toast('Error al guardar');console.error(e);}
 };
 
-// ── ADMIN: PICKS DEL GRUPO ────────────────────────────────────────
-async function renderAdminPicksPage() {
-  const allResults = await loadAllResults();
-  const allPicksSnap = await getDocs(collection(db, 'picks'));
-  const allPicks = {};
-  allPicksSnap.forEach(d => {
-    const [jid, name] = d.id.split('__');
-    if(!allPicks[jid]) allPicks[jid] = {};
-    allPicks[jid][name] = d.data();
-  });
-
-  let html = '';
-  let lastPhase = null;
-  CAL.forEach(j => {
-    if(j.phase !== lastPhase) {
-      html += `<div class="phase-divider">${PHASE_TITLES[j.phase]}</div>`;
-      lastPhase = j.phase;
-    }
-    const isGroups = j.phase === 'groups';
-    const res = allResults[j.id] || {};
-    html += `<div class="jornada-card">
-      <div class="jornada-header" onclick="toggleAdminPick('${j.id}')">
-        <div class="flex-row">
-          <span class="badge badge-${j.phase}">${PHASE_LABELS[j.phase]}</span>
+// ── ADMIN PICKS ──────────────────────────────────────────────────
+async function renderAdminPicksPage(){
+  const[allRes,allPicks]=await Promise.all([loadAllResults(),loadAllPicks()]);
+  let html='';let lastPh=null;
+  CAL.forEach(j=>{
+    if(j.phase!==lastPh){html+=`<div class="pdiv">${PT[j.phase]}</div>`;lastPh=j.phase;}
+    const ig=j.phase==='groups';
+    const res=allRes[j.id]||{};
+    const isOpen=openAJ===j.id;
+    html+=`<div class="jcard">
+      <div class="jhdr" onclick="toggleAdminJ('${j.id}')">
+        <div class="frow">
+          <span class="badge ${badgeCls(j.phase)}">${PL[j.phase]}</span>
           <strong style="font-size:13px;">${j.name}</strong>
         </div>
-        <span style="font-size:12px;color:var(--text-3);">▼</span>
+        <span style="font-size:12px;color:var(--text-3);">${isOpen?'▲':'▼'}</span>
       </div>
-      <div class="jornada-body" id="apbody-${j.id}">
-        ${j.matches.map((m,mi) => {
-          const r = res[mi+''];
-          return `<div class="match-pick-row">
-            <div class="match-lbl">${gtag(m.g)} ${m.d} ${m.t} — <strong>${m.h}</strong> vs <strong>${m.a}</strong></div>
-            <div class="picks-grid">
-              ${PARTICIPANTS.map((p,pi) => {
-                const pk = allPicks[j.id]?.[p.name]?.[mi+''];
-                if(!pk) return `<div class="pick-card"><div class="pc-name">${p.name}</div><div class="pc-score" style="color:var(--text-3);">—</div><div class="pc-pts">Sin pick</div></div>`;
-                let cls='', lbl='';
-                if(r) {
-                  if(isGroups) {
-                    const rw=r.h>r.a?'h':(r.a>r.h?'a':'d');
-                    const pw=pk.h>pk.a?'h':(pk.a>pk.h?'a':'d');
-                    const [bp,xp]=PHASE_PTS[j.phase];
-                    if(pk.h===r.h&&pk.a===r.a){cls='exact';lbl=`+${bp+xp} pts`;}
-                    else if(pw===rw){cls='winner';lbl=`+${bp} pt`;}
-                    else lbl='0 pts';
-                  } else {
-                    const [bp,xp]=PHASE_PTS[j.phase];
-                    const ex=pk.h===r.h&&pk.a===r.a;
-                    const cl=r.c&&pk.c===r.c;
-                    if(ex&&cl){cls='exact';lbl=`+${bp+xp} pts`;}
-                    else if(ex){cls='exact';lbl=`+${xp} pts`;}
-                    else if(cl){cls='winner';lbl=`+${bp} pts`;}
-                    else lbl='0 pts';
-                  }
-                }
-                return `<div class="pick-card ${cls}">
-                  <div class="pc-name">${p.name}</div>
-                  <div class="pc-score">${pk.h} – ${pk.a}</div>
-                  ${!isGroups?`<div class="pc-class">${pk.c||'—'}</div>`:''}
-                  ${lbl?`<div class="pc-pts">${lbl}</div>`:''}
+      <div class="jbody ${isOpen?'open':''}" id="aj-${j.id}">
+        <!-- Vista resumen picks de todos -->
+        ${j.matches.map((m,mi)=>{
+          const r=res[mi+''];
+          return `<div class="mrow">
+            <div class="mlbl">${gt(m.g)} ${m.d} ${m.t} — <strong>${m.h}</strong> vs <strong>${m.a}</strong></div>
+            <div class="pgrid">
+              ${PARTS.map((p,pi)=>{
+                const pk=(allPicks[j.id]||{})[p.name]?.[mi+''];
+                if(!pk)return `<div class="pcard"><div class="pcn">${p.name}</div><div class="pcs" style="color:var(--text-3);">—</div><div class="pcp">Sin pick</div></div>`;
+                const{cls,lbl}=r?calcPts(pk,r,j.phase):{cls:'',lbl:''};
+                return `<div class="pcard ${cls}">
+                  <div class="pcn">${p.name}</div>
+                  <div class="pcs">${pk.h} – ${pk.a}</div>
+                  ${!ig?`<div class="pcc">${pk.c||'—'}</div>`:''}
+                  ${lbl?`<div class="pcp">${lbl}</div>`:''}
                 </div>`;
               }).join('')}
             </div>
           </div>`;
         }).join('')}
-        <!-- Admin: editar picks de cualquier participante -->
-        <div style="margin-top:12px;padding-top:10px;border-top:0.5px solid var(--border);">
-          <div style="font-size:12px;font-weight:600;color:var(--accent);margin-bottom:8px;">Editar picks de:</div>
-          <div class="tab-row" id="admin-ptabs-${j.id}">
-            ${PARTICIPANTS.map((p,pi)=>`<button class="tab-btn ${activeParticipantIdx===pi?'active':''}" onclick="setAdminParticipant(${pi},'${j.id}')">${p.name}</button>`).join('')}
+        <!-- Editor admin -->
+        <div style="margin-top:14px;padding-top:12px;border-top:0.5px solid var(--border);">
+          <div style="font-size:12px;font-weight:600;color:var(--amber);margin-bottom:8px;">Editar picks de:</div>
+          <div class="tabs" id="atabs-${j.id}">
+            ${PARTS.map((p,pi)=>`<button class="tbtn ${adminPI===pi?'active':''}" onclick="setAdminPI(${pi},'${j.id}')">${p.name}</button>`).join('')}
           </div>
-          <div id="admin-pform-${j.id}"></div>
-          <div style="margin-top:8px;"><button class="btn btn-accent btn-sm" onclick="saveAdminPick('${j.id}')">Guardar pick</button></div>
+          <div id="aform-${j.id}"></div>
+          <div style="margin-top:8px;"><button class="btn ba bsm" onclick="saveAdminPick('${j.id}')">Guardar pick</button></div>
         </div>
       </div>
     </div>`;
   });
-  document.getElementById('admin-picks-list').innerHTML = html;
+  document.getElementById('admin-picks-list').innerHTML=html;
+  if(openAJ){
+    const j=CAL.find(x=>x.id===openAJ);
+    if(j)renderAdminPickForm(j.id,allPicks);
+  }
 }
 
-window.toggleAdminPick = (jid) => {
-  const el = document.getElementById('apbody-'+jid);
-  if(el) {
-    el.classList.toggle('open');
-    if(el.classList.contains('open')) renderAdminPickForm(jid);
+window.toggleAdminJ=async(jid)=>{
+  openAJ=openAJ===jid?null:jid;
+  await renderAdminPicksPage();
+  if(openAJ===jid){
+    const allPicks=await loadAllPicks();
+    renderAdminPickForm(jid,allPicks);
   }
 };
 
-window.setAdminParticipant = async (pi, jid) => {
-  activeParticipantIdx = pi;
-  document.querySelectorAll(`#admin-ptabs-${jid} .tab-btn`).forEach((b,i) => b.classList.toggle('active',i===pi));
-  renderAdminPickForm(jid);
+window.setAdminPI=async(pi,jid)=>{
+  adminPI=pi;
+  document.querySelectorAll(`#atabs-${jid} .tbtn`).forEach((b,i)=>b.classList.toggle('active',i===pi));
+  const allPicks=await loadAllPicks();
+  renderAdminPickForm(jid,allPicks);
 };
 
-async function renderAdminPickForm(jid) {
-  const j = CAL.find(x => x.id === jid);
-  const el = document.getElementById('admin-pform-'+jid);
-  if(!j || !el) return;
-  const isGroups = j.phase === 'groups';
-  const pName = PARTICIPANTS[activeParticipantIdx].name;
-  const snap = await getDoc(doc(db, 'picks', `${jid}__${pName}`));
-  const existing = snap.exists() ? snap.data() : {};
-  el.innerHTML = `<div class="my-picks-form" style="background:#fff8e8;">
+function renderAdminPickForm(jid,allPicks){
+  const j=CAL.find(x=>x.id===jid);
+  const el=document.getElementById('aform-'+jid);
+  if(!j||!el)return;
+  const ig=j.phase==='groups';
+  const pName=PARTS[adminPI].name;
+  const existing=(allPicks[jid]||{})[pName]||{};
+  el.innerHTML=`<div class="pickform pickform-admin">
     <div style="font-size:12px;color:var(--amber);margin-bottom:8px;">Picks de <strong>${pName}</strong></div>
-    ${j.matches.map((m,mi) => {
-      const ev = existing[mi+''] || {};
-      return `<div class="match-pick-row">
-        <div class="match-lbl">${gtag(m.g)} ${m.h} vs ${m.a}</div>
-        ${isGroups ? `
-          <div class="score-pair">
+    ${j.matches.map((m,mi)=>{
+      const ev=existing[mi+'']||{};
+      return `<div class="mrow">
+        <div class="mlbl">${gt(m.g)} ${m.h} vs ${m.a}</div>
+        ${ig?`
+          <div class="spair">
             <div class="sf"><label>${m.h}</label><input type="number" min="0" max="20" id="ap_${mi}_h" value="${ev.h!==undefined?ev.h:''}" placeholder="0"></div>
-            <div class="vs-sep">vs</div>
+            <div class="vsep">vs</div>
             <div class="sf"><label>${m.a}</label><input type="number" min="0" max="20" id="ap_${mi}_a" value="${ev.a!==undefined?ev.a:''}" placeholder="0"></div>
           </div>
-        ` : `
+        `:`
           <div class="grid3">
             <div><label>${m.h} (90')</label><input type="number" min="0" max="20" id="ap_${mi}_h" value="${ev.h!==undefined?ev.h:''}" placeholder="0"></div>
             <div><label>${m.a} (90')</label><input type="number" min="0" max="20" id="ap_${mi}_a" value="${ev.a!==undefined?ev.a:''}" placeholder="0"></div>
@@ -935,71 +848,58 @@ async function renderAdminPickForm(jid) {
   </div>`;
 }
 
-window.saveAdminPick = async (jid) => {
-  const j = CAL.find(x => x.id === jid);
-  if(!j) return;
-  const isGroups = j.phase === 'groups';
-  const pName = PARTICIPANTS[activeParticipantIdx].name;
-  const data = {};
-  j.matches.forEach((_,mi) => {
-    const hEl = document.getElementById(`ap_${mi}_h`);
-    const aEl = document.getElementById(`ap_${mi}_a`);
-    if(!hEl || !aEl || hEl.value===''&&aEl.value==='') return;
-    data[mi+''] = {
-      h: parseInt(hEl.value)||0,
-      a: parseInt(aEl.value)||0,
-      c: isGroups ? null : (document.getElementById(`ap_${mi}_c`)?.value||'')
-    };
+window.saveAdminPick=async(jid)=>{
+  const j=CAL.find(x=>x.id===jid);if(!j)return;
+  const ig=j.phase==='groups';
+  const pName=PARTS[adminPI].name;
+  const data={};
+  j.matches.forEach((_,mi)=>{
+    const hEl=document.getElementById(`ap_${mi}_h`);
+    const aEl=document.getElementById(`ap_${mi}_a`);
+    if(!hEl||!aEl||hEl.value===''&&aEl.value==='')return;
+    data[mi+'']={h:parseInt(hEl.value)||0,a:parseInt(aEl.value)||0,c:ig?null:(document.getElementById(`ap_${mi}_c`)?.value||'')};
   });
-  try {
-    await setDoc(doc(db, 'picks', `${jid}__${pName}`), data);
+  try{
+    await setDoc(doc(db,'picks',`${jid}__${pName}`),data,{merge:true});
     toast(`Pick de ${pName} guardado ✓`);
     renderRanking();
-    renderAdminPicksPage();
-  } catch(e) { toast('Error al guardar'); }
+    await renderAdminPicksPage();
+  }catch(e){toast('Error al guardar');console.error(e);}
 };
 
-// ── RESULTADOS (admin) ───────────────────────────────────────────
-async function renderResultsPage() {
-  const allResults = await loadAllResults();
-  const allPicksSnap = await getDocs(collection(db, 'picks'));
-  const allPicks = {};
-  allPicksSnap.forEach(d => {
-    const [jid, name] = d.id.split('__');
-    if(!allPicks[jid]) allPicks[jid] = {};
-    allPicks[jid][name] = d.data();
-  });
-
-  let html = '';
-  let lastPhase = null;
-  CAL.forEach(j => {
-    if(j.phase !== lastPhase) {
-      html += `<div class="phase-divider">${PHASE_TITLES[j.phase]}</div>`;
-      lastPhase = j.phase;
-    }
-    const isGroups = j.phase === 'groups';
-    const res = allResults[j.id] || {};
-    const hasFull = j.matches.every((_,i) => res[i+''] !== undefined);
-    html += `<div class="jornada-card">
-      <div class="jornada-header" onclick="toggleResBody('resbody-${j.id}')">
-        <div class="flex-row">
-          <span class="badge badge-${j.phase}">${PHASE_LABELS[j.phase]}</span>
+// ── RESULTADOS ───────────────────────────────────────────────────
+async function renderResultsPage(){
+  const[allRes,allPicks]=await Promise.all([loadAllResults(),loadAllPicks()]);
+  let html='';let lastPh=null;
+  CAL.forEach(j=>{
+    if(j.phase!==lastPh){html+=`<div class="pdiv">${PT[j.phase]}</div>`;lastPh=j.phase;}
+    const ig=j.phase==='groups';
+    const res=allRes[j.id]||{};
+    const full=j.matches.every((_,i)=>res[i+'']!==undefined);
+    const isOpen=openRJ===j.id;
+    html+=`<div class="jcard">
+      <div class="jhdr" onclick="toggleResJ('${j.id}')">
+        <div class="frow">
+          <span class="badge ${badgeCls(j.phase)}">${PL[j.phase]}</span>
           <strong style="font-size:13px;">${j.name}</strong>
         </div>
-        <span class="status-pill ${hasFull?'status-done':'status-pending'}">${hasFull?'✓ Con resultados':'Sin resultados'}</span>
+        <div class="frow">
+          <span class="spill ${full?'sd':'sp'}">${full?'✓ Con resultados':'Sin resultados'}</span>
+          <span style="font-size:12px;color:var(--text-3);">${isOpen?'▲':'▼'}</span>
+        </div>
       </div>
-      <div class="jornada-body" id="resbody-${j.id}">
-        ${j.matches.map((m,mi) => {
-          const r = res[mi+''];
-          return `<div class="match-pick-row">
-            <div class="match-lbl">${gtag(m.g)} ${m.d} ${m.t} — <strong>${m.h}</strong> vs <strong>${m.a}</strong></div>
-            ${isGroups ? `
-              <div class="score-pair">
+      <div class="jbody ${isOpen?'open':''}" id="rj-${j.id}">
+        ${j.matches.map((m,mi)=>{
+          const r=res[mi+''];
+          return `<div class="mrow">
+            <div class="mlbl">${gt(m.g)} ${m.d} ${m.t} — <strong>${m.h}</strong> vs <strong>${m.a}</strong></div>
+            ${ig?`
+              <div class="spair">
                 <div class="sf"><label>${m.h}</label><input type="number" min="0" max="20" id="r_${j.id}_${mi}_h" value="${r?r.h:''}" placeholder="0"></div>
-                <div class="vs-sep">—</div>
+                <div class="vsep">—</div>
                 <div class="sf"><label>${m.a}</label><input type="number" min="0" max="20" id="r_${j.id}_${mi}_a" value="${r?r.a:''}" placeholder="0"></div>
               </div>
-            ` : `
+            `:`
               <div class="grid3">
                 <div><label>${m.h} (90')</label><input type="number" min="0" max="20" id="r_${j.id}_${mi}_h" value="${r?r.h:''}" placeholder="0"></div>
                 <div><label>${m.a} (90')</label><input type="number" min="0" max="20" id="r_${j.id}_${mi}_a" value="${r?r.a:''}" placeholder="0"></div>
@@ -1012,192 +912,140 @@ async function renderResultsPage() {
                 </div>
               </div>
             `}
-            ${r ? renderComparisonAdmin(allPicks, j, mi, r) : ''}
+            ${r?`<div style="margin-top:8px;">
+              <div style="font-size:11px;color:var(--text-3);margin-bottom:4px;font-weight:600;">Pronósticos:</div>
+              <div class="pgrid">
+                ${PARTS.map(p=>{
+                  const pk=(allPicks[j.id]||{})[p.name]?.[mi+''];
+                  if(!pk)return `<div class="pcard"><div class="pcn">${p.name}</div><div class="pcs" style="color:var(--text-3);">—</div><div class="pcp">Sin pick</div></div>`;
+                  const{cls,lbl}=calcPts(pk,r,j.phase);
+                  return `<div class="pcard ${cls}">
+                    <div class="pcn">${p.name}</div>
+                    <div class="pcs">${pk.h} – ${pk.a}</div>
+                    ${!ig?`<div class="pcc">${pk.c||'—'}</div>`:''}
+                    <div class="pcp">${lbl}</div>
+                  </div>`;
+                }).join('')}
+              </div>
+            </div>`:''}
           </div>`;
         }).join('')}
-        <div style="margin-top:10px;"><button class="btn btn-accent" onclick="saveResults('${j.id}')">Guardar resultados</button></div>
+        <div style="margin-top:10px;"><button class="btn ba" onclick="saveResults('${j.id}')">Guardar resultados</button></div>
       </div>
     </div>`;
   });
-  document.getElementById('results-list').innerHTML = html;
+  document.getElementById('results-list').innerHTML=html;
 }
 
-window.toggleResBody = (id) => {
-  const el = document.getElementById(id);
-  if(el) el.classList.toggle('open');
+window.toggleResJ=async(jid)=>{
+  openRJ=openRJ===jid?null:jid;
+  await renderResultsPage();
 };
 
-function renderComparisonAdmin(allPicks, j, mi, r) {
-  const isGroups = j.phase === 'groups';
-  const [bp,xp] = PHASE_PTS[j.phase];
-  return `<div style="margin-top:8px;">
-    <div style="font-size:11px;color:var(--text-3);margin-bottom:4px;font-weight:600;">Pronósticos:</div>
-    <div class="picks-grid">
-      ${PARTICIPANTS.map(p => {
-        const pk = allPicks[j.id]?.[p.name]?.[mi+''];
-        if(!pk) return `<div class="pick-card"><div class="pc-name">${p.name}</div><div class="pc-score" style="color:var(--text-3);">—</div><div class="pc-pts">Sin pick</div></div>`;
-        let cls='', lbl='0 pts';
-        if(isGroups){
-          const rw=r.h>r.a?'h':(r.a>r.h?'a':'d');
-          const pw=pk.h>pk.a?'h':(pk.a>pk.h?'a':'d');
-          if(pk.h===r.h&&pk.a===r.a){cls='exact';lbl=`+${bp+xp} pts`;}
-          else if(pw===rw){cls='winner';lbl=`+${bp} pt`;}
-        } else {
-          const ex=pk.h===r.h&&pk.a===r.a;
-          const cl=r.c&&pk.c===r.c;
-          if(ex&&cl){cls='exact';lbl=`+${bp+xp} pts`;}
-          else if(ex){cls='exact';lbl=`+${xp} pts`;}
-          else if(cl){cls='winner';lbl=`+${bp} pts`;}
-        }
-        return `<div class="pick-card ${cls}">
-          <div class="pc-name">${p.name}</div>
-          <div class="pc-score">${pk.h} – ${pk.a}</div>
-          ${!isGroups?`<div class="pc-class">${pk.c||'—'}</div>`:''}
-          <div class="pc-pts">${lbl}</div>
-        </div>`;
-      }).join('')}
-    </div>
-  </div>`;
-}
-
-window.saveResults = async (jid) => {
-  const j = CAL.find(x => x.id === jid);
-  if(!j) return;
-  const isGroups = j.phase === 'groups';
-  const data = {};
-  j.matches.forEach((_,mi) => {
-    const hEl = document.getElementById(`r_${jid}_${mi}_h`);
-    const aEl = document.getElementById(`r_${jid}_${mi}_a`);
-    if(!hEl || !aEl || hEl.value===''||aEl.value==='') return;
-    data[mi+''] = {
-      h: parseInt(hEl.value),
-      a: parseInt(aEl.value),
-      c: isGroups ? null : (document.getElementById(`r_${jid}_${mi}_c`)?.value||'')
-    };
+window.saveResults=async(jid)=>{
+  const j=CAL.find(x=>x.id===jid);if(!j)return;
+  const ig=j.phase==='groups';
+  const data={};
+  j.matches.forEach((_,mi)=>{
+    const hEl=document.getElementById(`r_${jid}_${mi}_h`);
+    const aEl=document.getElementById(`r_${jid}_${mi}_a`);
+    if(!hEl||!aEl||hEl.value===''||aEl.value==='')return;
+    data[mi+'']={h:parseInt(hEl.value),a:parseInt(aEl.value),c:ig?null:(document.getElementById(`r_${jid}_${mi}_c`)?.value||'')};
   });
-  try {
-    await setDoc(doc(db, 'results', jid), data);
+  try{
+    await setDoc(doc(db,'results',jid),data);
     toast('Resultados guardados ✓');
     renderRanking();
-    renderResultsPage();
-  } catch(e) { toast('Error al guardar'); console.error(e); }
+    await renderResultsPage();
+  }catch(e){toast('Error al guardar');console.error(e);}
 };
 
 // ── PRE-TORNEO ───────────────────────────────────────────────────
-async function renderMyPretorneo() {
-  const snap = await getDoc(doc(db, 'pretorneo', currentUserName));
-  const existing = snap.exists() ? snap.data() : {};
-  const realDoc = await getDoc(doc(db, 'config', 'realTorneo'));
-  const real = realDoc.exists() ? realDoc.data() : {};
-  const hasReal = !!real.champion;
-
-  document.getElementById('my-pretorneo-form').innerHTML = `
-    <div class="card-title">🏆 Tus pronósticos pre-torneo</div>
-    <div class="grid2">
-      <div><label>Campeón</label><input type="text" id="mypre-ch" placeholder="País" value="${existing.champion||''}" ${hasReal?'disabled':''}></div>
-      <div><label>Finalista</label><input type="text" id="mypre-fi" placeholder="País" value="${existing.finalist||''}" ${hasReal?'disabled':''}></div>
-      <div><label>Tercer lugar</label><input type="text" id="mypre-th" placeholder="País" value="${existing.third||''}" ${hasReal?'disabled':''}></div>
-      <div><label>Goleador del torneo</label><input type="text" id="mypre-ts" placeholder="Jugador" value="${existing.topscorer||''}" ${hasReal?'disabled':''}></div>
-    </div>
-    ${!hasReal ? `<div style="margin-top:12px;"><button class="btn btn-accent" onclick="saveMyPretorneo()">Guardar</button></div>` : ''}
-    ${hasReal ? `<div style="margin-top:12px;" class="alert alert-info">El torneo ya tiene resultados definidos. Aquí van tus puntos:</div>
-      ${renderMyPrePoints(existing, real)}` : ''}
-  `;
-}
-
-function renderMyPrePoints(pre, real) {
-  const m=(a,b)=>a&&b&&a.toLowerCase()===b.toLowerCase();
-  const fields=[{k:'champion',l:'Campeón',pts:10},{k:'finalist',l:'Finalista',pts:5},{k:'third',l:'Tercer lugar',pts:3},{k:'topscorer',l:'Goleador',pts:8}];
-  return fields.map(f => {
-    const hit = m(pre[f.k], real[f.k]);
-    return `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(--border-light);font-size:13px;">
-      <span>${f.l}: <strong>${pre[f.k]||'—'}</strong> (Real: ${real[f.k]||'—'})</span>
-      <span style="color:${hit?'var(--green)':'var(--text-3)'};">${hit?'+'+f.pts+' pts':'0 pts'}</span>
+async function renderMyPre(){
+  const snap=await getDoc(doc(db,'pretorneo',CUName));
+  const ex=snap.exists()?snap.data():{};
+  const rd=await getDoc(doc(db,'config','realTorneo'));
+  const real=rd.exists()?rd.data():{};
+  const hasReal=!!real.champion;
+  const mc=(a,b)=>a&&b&&a.toLowerCase()===b.toLowerCase();
+  document.getElementById('my-pre-form').innerHTML=`
+    <div class="card">
+      <div class="ctitle">🏆 Tus pronósticos pre-torneo</div>
+      <div class="grid2">
+        <div><label>Campeón</label><input type="text" id="mpc" placeholder="País" value="${ex.champion||''}" ${hasReal?'disabled':''}></div>
+        <div><label>Finalista</label><input type="text" id="mpf" placeholder="País" value="${ex.finalist||''}" ${hasReal?'disabled':''}></div>
+        <div><label>Tercer lugar</label><input type="text" id="mpt" placeholder="País" value="${ex.third||''}" ${hasReal?'disabled':''}></div>
+        <div><label>Goleador</label><input type="text" id="mpg" placeholder="Jugador" value="${ex.topscorer||''}" ${hasReal?'disabled':''}></div>
+      </div>
+      ${!hasReal?`<div style="margin-top:12px;"><button class="btn ba" onclick="saveMyPre()">Guardar</button></div>`:''}
+      ${hasReal?`
+        <div style="margin-top:14px;">
+          ${[{k:'champion',l:'Campeón',pts:10},{k:'finalist',l:'Finalista',pts:5},{k:'third',l:'Tercer lugar',pts:3},{k:'topscorer',l:'Goleador',pts:8}].map(f=>{
+            const hit=mc(ex[f.k],real[f.k]);
+            return `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(--border-light);font-size:13px;">
+              <span>${f.l}: <strong>${ex[f.k]||'—'}</strong> (Real: ${real[f.k]||'—'})</span>
+              <span style="color:${hit?'var(--green)':'var(--text-3)'};">${hit?'+'+f.pts+' pts':'0 pts'}</span>
+            </div>`;
+          }).join('')}
+        </div>
+      `:''}
     </div>`;
-  }).join('');
 }
 
-window.saveMyPretorneo = async () => {
-  const data = {
-    champion: document.getElementById('mypre-ch')?.value.trim()||'',
-    finalist:  document.getElementById('mypre-fi')?.value.trim()||'',
-    third:     document.getElementById('mypre-th')?.value.trim()||'',
-    topscorer: document.getElementById('mypre-ts')?.value.trim()||''
+window.saveMyPre=async()=>{
+  const data={
+    champion:document.getElementById('mpc')?.value.trim()||'',
+    finalist:document.getElementById('mpf')?.value.trim()||'',
+    third:document.getElementById('mpt')?.value.trim()||'',
+    topscorer:document.getElementById('mpg')?.value.trim()||''
   };
-  try {
-    await setDoc(doc(db, 'pretorneo', currentUserName), data);
-    toast('Pronósticos pre-torneo guardados ✓');
-  } catch(e) { toast('Error al guardar'); }
+  try{await setDoc(doc(db,'pretorneo',CUName),data);toast('Pronósticos pre-torneo guardados ✓');}
+  catch(e){toast('Error al guardar');}
 };
 
-// ── ADMIN PRE-TORNEO ─────────────────────────────────────────────
-async function renderAdminPretorneo() {
-  const preSnap = await getDocs(collection(db, 'pretorneo'));
-  const prePicks = {};
-  preSnap.forEach(d => { prePicks[d.id] = d.data(); });
-  const realDoc = await getDoc(doc(db, 'config', 'realTorneo'));
-  const real = realDoc.exists() ? realDoc.data() : {};
-
-  document.getElementById('real-champion').value = real.champion||'';
-  document.getElementById('real-finalist').value  = real.finalist||'';
-  document.getElementById('real-third').value     = real.third||'';
-  document.getElementById('real-topscorer').value = real.topscorer||'';
-
-  if(!real.champion) { document.getElementById('pretorneo-results-display').innerHTML = ''; return; }
-
-  const m=(a,b)=>a&&b&&a.toLowerCase()===b.toLowerCase();
+async function renderAdminPre(){
+  const preSnap=await getDocs(collection(db,'pretorneo'));
+  const prePicks={};preSnap.forEach(d=>{prePicks[d.id]=d.data();});
+  const rd=await getDoc(doc(db,'config','realTorneo'));
+  const real=rd.exists()?rd.data():{};
+  document.getElementById('rc').value=real.champion||'';
+  document.getElementById('rf').value=real.finalist||'';
+  document.getElementById('rt').value=real.third||'';
+  document.getElementById('rg').value=real.topscorer||'';
+  if(!real.champion){document.getElementById('admin-pre-display').innerHTML='';return;}
+  const mc=(a,b)=>a&&b&&a.toLowerCase()===b.toLowerCase();
   const fields=[{k:'champion',l:'Campeón',pts:10},{k:'finalist',l:'Finalista',pts:5},{k:'third',l:'Tercer lugar',pts:3},{k:'topscorer',l:'Goleador',pts:8}];
-  document.getElementById('pretorneo-results-display').innerHTML = `
-    <div class="card" style="margin-top:12px;"><div class="card-title">Resumen pre-torneo</div>
-      ${fields.map(f => `
-        <div style="margin-bottom:10px;">
-          <div style="font-size:12px;color:var(--text-3);margin-bottom:5px;">${f.l} (${f.pts} pts) — Real: <strong>${real[f.k]||'—'}</strong></div>
-          <div class="picks-grid">
-            ${PARTICIPANTS.map((p,pi) => {
-              const val = (prePicks[p.name]||{})[f.k]||'';
-              const hit = m(val, real[f.k]);
-              return `<div class="pick-card ${hit?'exact':''}">
-                <div class="pc-name">${p.name}</div>
-                <div class="pc-score" style="font-size:12px;">${val||'—'}</div>
-                <div class="pc-pts">${hit?'+'+f.pts+' pts':'0 pts'}</div>
-              </div>`;
-            }).join('')}
-          </div>
-        </div>`).join('')}
-    </div>`;
+  document.getElementById('admin-pre-display').innerHTML=`<div class="card" style="margin-top:12px;"><div class="ctitle">Resumen pre-torneo</div>
+    ${fields.map(f=>`<div style="margin-bottom:10px;">
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:5px;">${f.l} (${f.pts} pts) — Real: <strong>${real[f.k]||'—'}</strong></div>
+      <div class="pgrid">
+        ${PARTS.map((p,pi)=>{
+          const val=(prePicks[p.name]||{})[f.k]||'';
+          const hit=mc(val,real[f.k]);
+          return `<div class="pcard ${hit?'exact':''}">
+            <div class="pcn">${p.name}</div>
+            <div class="pcs" style="font-size:12px;">${val||'—'}</div>
+            <div class="pcp">${hit?'+'+f.pts+' pts':'0 pts'}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`).join('')}
+  </div>`;
 }
 
-window.saveRealTorneo = async () => {
-  const data = {
-    champion:  document.getElementById('real-champion').value.trim(),
-    finalist:  document.getElementById('real-finalist').value.trim(),
-    third:     document.getElementById('real-third').value.trim(),
-    topscorer: document.getElementById('real-topscorer').value.trim()
+window.saveRealTorneo=async()=>{
+  const data={
+    champion:document.getElementById('rc').value.trim(),
+    finalist:document.getElementById('rf').value.trim(),
+    third:document.getElementById('rt').value.trim(),
+    topscorer:document.getElementById('rg').value.trim()
   };
-  try {
-    await setDoc(doc(db, 'config', 'realTorneo'), data);
+  try{
+    await setDoc(doc(db,'config','realTorneo'),data);
     toast('Resultados reales guardados ✓');
-    renderRanking();
-    renderAdminPretorneo();
-  } catch(e) { toast('Error al guardar'); }
+    renderRanking();renderAdminPre();
+  }catch(e){toast('Error al guardar');}
 };
-
-// ── LOADERS ──────────────────────────────────────────────────────
-async function loadMyPicks() {
-  const out = {};
-  for(const j of CAL) {
-    const snap = await getDoc(doc(db, 'picks', `${j.id}__${currentUserName}`));
-    if(snap.exists()) out[j.id] = snap.data();
-  }
-  return out;
-}
-
-async function loadAllResults() {
-  const snap = await getDocs(collection(db, 'results'));
-  const out = {};
-  snap.forEach(d => { out[d.id] = d.data(); });
-  return out;
-}
 </script>
 </body>
 </html>
