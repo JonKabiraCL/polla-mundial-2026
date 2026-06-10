@@ -1193,20 +1193,19 @@ async function renderAdminPre(){
   document.getElementById('rf').value=real.finalist||'';
   document.getElementById('rt').value=real.third||'';
   document.getElementById('rg').value=real.topscorer||'';
-  if(!real.champion){document.getElementById('admin-pre-display').innerHTML='';return;}
   const mc=(a,b)=>a&&b&&a.toLowerCase()===b.toLowerCase();
   const fields=[{k:'champion',l:'Campeón',pts:10},{k:'finalist',l:'Finalista',pts:5},{k:'third',l:'Tercer lugar',pts:3},{k:'topscorer',l:'Goleador',pts:8}];
-  document.getElementById('admin-pre-display').innerHTML=`<div class="card" style="margin-top:12px;"><div class="ctitle">Resumen pre-torneo</div>
-    ${fields.map(f=>`<div style="margin-bottom:10px;">
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:5px;">${f.l} (${f.pts} pts) — Real: <strong>${real[f.k]||'—'}</strong></div>
+  document.getElementById('admin-pre-display').innerHTML=`<div class="card" style="margin-top:12px;"><div class="ctitle">Pronósticos pre-torneo del grupo</div>
+    ${fields.map(f=>`<div style="margin-bottom:12px;">
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:5px;font-weight:600;">${f.l} (${f.pts} pts)${real[f.k]?' — Real: <strong>'+real[f.k]+'</strong>':''}</div>
       <div class="pgrid">
         ${PARTS.map((p,pi)=>{
           const val=(prePicks[p.name]||{})[f.k]||'';
-          const hit=mc(val,real[f.k]);
-          return`<div class="pcard ${hit?'exact':''}">
+          const hit=real[f.k]&&mc(val,real[f.k]);
+          return`<div class="pcard ${hit?'exact':val?'winner':''}">
             <div class="pcn">${p.name}</div>
             <div class="pcs" style="font-size:12px;">${val||'—'}</div>
-            <div class="pcp">${hit?'+'+f.pts+' pts':'0 pts'}</div>
+            <div class="pcp">${real[f.k]?(hit?'+'+f.pts+' pts':'0 pts'):(val?'✓ Ingresado':'Sin pick')}</div>
           </div>`;
         }).join('')}
       </div>
