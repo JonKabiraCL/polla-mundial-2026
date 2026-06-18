@@ -689,6 +689,36 @@ window.showPage=(id,btn)=>{
 
 // ── HELPERS ──────────────────────────────────────────────────────
 function gt(g){return g?`<span class="gtag g${g}">Grupo ${g}</span>`:'';}
+
+const FL={
+  'México':'🇲🇽','Sudáfrica':'🇿🇦','Corea del Sur':'🇰🇷','Rep. Checa':'🇨🇿',
+  'Canadá':'🇨🇦','Bosnia y Herz.':'🇧🇦','Catar':'🇶🇦','Suiza':'🇨🇭',
+  'Brasil':'🇧🇷','Marruecos':'🇲🇦','Haití':'🇭🇹','Escocia':'🏴󠁧󠁢󠁳󠁣󠁴󠁿',
+  'Estados Unidos':'🇺🇸','Paraguay':'🇵🇾','Australia':'🇦🇺','Turquía':'🇹🇷',
+  'Alemania':'🇩🇪','Curazao':'🇨🇼','Costa de Marfil':'🇨🇮','Ecuador':'🇪🇨',
+  'Países Bajos':'🇳🇱','Japón':'🇯🇵','Suecia':'🇸🇪','Túnez':'🇹🇳',
+  'Bélgica':'🇧🇪','Egipto':'🇪🇬','Irán':'🇮🇷','Nueva Zelanda':'🇳🇿',
+  'España':'🇪🇸','Cabo Verde':'🇨🇻','Arabia Saudita':'🇸🇦','Uruguay':'🇺🇾',
+  'Francia':'🇫🇷','Senegal':'🇸🇳','Irak':'🇮🇶','Noruega':'🇳🇴',
+  'Argentina':'🇦🇷','Argelia':'🇩🇿','Austria':'🇦🇹','Jordania':'🇯🇴',
+  'Portugal':'🇵🇹','RD Congo':'🇨🇩','Uzbekistán':'🇺🇿','Colombia':'🇨🇴',
+  'Inglaterra':'🏴󠁧󠁢󠁥󠁮󠁧󠁿','Croacia':'🇭🇷','Ghana':'🇬🇭','Panamá':'🇵🇦',
+};
+// fl(team, side) — side: 'h'=local (bandera izq), 'a'=visita (bandera der)
+function fl(t,side){
+  const f=FL[t]||'';
+  if(!f) return t;
+  return side==='h'?`<span style="font-size:15px;vertical-align:middle;margin-right:3px;">${f}</span>${t}`
+                   :`${t}<span style="font-size:15px;vertical-align:middle;margin-left:3px;">${f}</span>`;
+}
+// Para labels compactos en formulario
+function fll(t,side){
+  const f=FL[t]||'';
+  if(!f) return t;
+  return side==='h'?`<span style="font-size:13px;vertical-align:middle;margin-right:2px;">${f}</span>${t}`
+                   :`${t}<span style="font-size:13px;vertical-align:middle;margin-left:2px;">${f}</span>`;
+}
+
 function toast(msg){
   const t=document.getElementById('toast');
   t.textContent=msg;t.classList.add('show');
@@ -826,7 +856,7 @@ async function renderMyPicksPage(){
       ${dl?`<div style="font-size:10px;color:var(--text-3);padding:2px 14px 6px;">${dlStr}</div>`:''}
       ${filled>0&&filled<total?`<div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>`:''}
       <div class="jbody ${isOpen?'open':''}" id="myj-${j.id}">
-        <div class="mprev">${j.matches.map(m=>`${gt(m.g)}<span>${m.d} ${m.t} — <strong>${m.h}</strong> vs <strong>${m.a}</strong></span>`).join('<br>')}</div>
+        <div class="mprev">${j.matches.map(m=>`${gt(m.g)}<span>${m.d} ${m.t} — <strong>${fl(m.h,'h')}</strong> vs <strong>${fl(m.a,'a')}</strong></span>`).join('<br>')}</div>
         <div id="myf-${j.id}"></div>
         ${!hasRes&&!closed?`<div style="margin-top:10px;"><button class="btn ba" onclick="saveMyPicks('${j.id}')">Guardar picks</button></div>`:''}
         ${closed&&!hasRes?`<div class="closed-banner">⏱ Plazo de pronósticos cerrado — 0 puntos para esta jornada</div>`:''}
@@ -869,17 +899,17 @@ function renderMyPickForm(j,jPicks,res){
       const r=res[mi+''];
       const{cls,lbl}=r?calcPts(ev,r,j.phase):{cls:'',lbl:''};
       return`<div class="mrow">
-        <div class="mlbl">${gt(m.g)} ${m.d} ${m.t} — <strong>${m.h}</strong> vs <strong>${m.a}</strong></div>
+        <div class="mlbl">${gt(m.g)} ${m.d} ${m.t} — <strong>${fl(m.h,'h')}</strong> vs <strong>${fl(m.a,'a')}</strong></div>
         ${ig?`
           <div class="spair">
-            <div class="sf"><label>${m.h}</label><input type="number" min="0" max="20" id="mp_${mi}_h" value="${ev.h!==undefined?ev.h:''}" placeholder="0" ${readOnly?'disabled':''}></div>
+            <div class="sf"><label>${fll(m.h,'h')}</label><input type="number" min="0" max="20" id="mp_${mi}_h" value="${ev.h!==undefined?ev.h:''}" placeholder="0" ${readOnly?'disabled':''}></div>
             <div class="vsep">vs</div>
-            <div class="sf"><label>${m.a}</label><input type="number" min="0" max="20" id="mp_${mi}_a" value="${ev.a!==undefined?ev.a:''}" placeholder="0" ${readOnly?'disabled':''}></div>
+            <div class="sf" style="text-align:right;"><label style="justify-content:flex-end;display:flex;">${fll(m.a,'a')}</label><input type="number" min="0" max="20" id="mp_${mi}_a" value="${ev.a!==undefined?ev.a:''}" placeholder="0" ${readOnly?'disabled':''}></div>
           </div>
         `:`
           <div class="grid3">
-            <div><label>${m.h} (90')</label><input type="number" min="0" max="20" id="mp_${mi}_h" value="${ev.h!==undefined?ev.h:''}" placeholder="0" ${readOnly?'disabled':''}></div>
-            <div><label>${m.a} (90')</label><input type="number" min="0" max="20" id="mp_${mi}_a" value="${ev.a!==undefined?ev.a:''}" placeholder="0" ${readOnly?'disabled':''}></div>
+            <div><label>${fll(m.h,'h')} (90')</label><input type="number" min="0" max="20" id="mp_${mi}_h" value="${ev.h!==undefined?ev.h:''}" placeholder="0" ${readOnly?'disabled':''}></div>
+            <div><label>${fll(m.a,'a')} (90')</label><input type="number" min="0" max="20" id="mp_${mi}_a" value="${ev.a!==undefined?ev.a:''}" placeholder="0" ${readOnly?'disabled':''}></div>
             <div><label>Clasifica</label>
               <select id="mp_${mi}_c" ${readOnly?'disabled':''}>
                 <option value="">—</option>
@@ -938,7 +968,7 @@ async function renderAdminPicksPage(){
         ${j.matches.map((m,mi)=>{
           const r=res[mi+''];
           return`<div class="mrow">
-            <div class="mlbl">${gt(m.g)} ${m.d} ${m.t} — <strong>${m.h}</strong> vs <strong>${m.a}</strong></div>
+            <div class="mlbl">${gt(m.g)} ${m.d} ${m.t} — <strong>${fl(m.h,'h')}</strong> vs <strong>${fl(m.a,'a')}</strong></div>
             <div class="pgrid">
               ${PARTS.map(p=>{
                 const pk=(allPicks[j.id]||{})[p.name]?.[mi+''];
@@ -946,8 +976,8 @@ async function renderAdminPicksPage(){
                 const{cls,lbl}=r?calcPts(pk,r,j.phase):{cls:'',lbl:''};
                 return`<div class="pcard ${cls}">
                   <div class="pcn">${p.name}</div>
-                  <div class="pcs">${pk.h} – ${pk.a}</div>
-                  ${!ig?`<div class="pcc">${pk.c||'—'}</div>`:''}
+                  <div class="pcs">${(FL[m.h]||'')} ${pk.h} – ${pk.a} ${(FL[m.a]||'')}</div>
+                  ${!ig?`<div class="pcc">${pk.c?(FL[pk.c]||'')+' '+pk.c:'—'}</div>`:''}
                   ${lbl?`<div class="pcp">${lbl}</div>`:''}
                 </div>`;
               }).join('')}
@@ -996,17 +1026,17 @@ function renderAdminPickForm(jid,allPicks){
     ${j.matches.map((m,mi)=>{
       const ev=existing[mi+'']||{};
       return`<div class="mrow">
-        <div class="mlbl">${gt(m.g)} ${m.h} vs ${m.a}</div>
+        <div class="mlbl">${gt(m.g)} ${fl(m.h,'h')} vs ${fl(m.a,'a')}</div>
         ${ig?`
           <div class="spair">
-            <div class="sf"><label>${m.h}</label><input type="number" min="0" max="20" id="ap_${mi}_h" value="${ev.h!==undefined?ev.h:''}" placeholder="0"></div>
+            <div class="sf"><label>${fll(m.h,'h')}</label><input type="number" min="0" max="20" id="ap_${mi}_h" value="${ev.h!==undefined?ev.h:''}" placeholder="0"></div>
             <div class="vsep">vs</div>
-            <div class="sf"><label>${m.a}</label><input type="number" min="0" max="20" id="ap_${mi}_a" value="${ev.a!==undefined?ev.a:''}" placeholder="0"></div>
+            <div class="sf" style="text-align:right;"><label style="justify-content:flex-end;display:flex;">${fll(m.a,'a')}</label><input type="number" min="0" max="20" id="ap_${mi}_a" value="${ev.a!==undefined?ev.a:''}" placeholder="0"></div>
           </div>
         `:`
           <div class="grid3">
-            <div><label>${m.h} (90')</label><input type="number" min="0" max="20" id="ap_${mi}_h" value="${ev.h!==undefined?ev.h:''}" placeholder="0"></div>
-            <div><label>${m.a} (90')</label><input type="number" min="0" max="20" id="ap_${mi}_a" value="${ev.a!==undefined?ev.a:''}" placeholder="0"></div>
+            <div><label>${fll(m.h,'h')} (90')</label><input type="number" min="0" max="20" id="ap_${mi}_h" value="${ev.h!==undefined?ev.h:''}" placeholder="0"></div>
+            <div><label>${fll(m.a,'a')} (90')</label><input type="number" min="0" max="20" id="ap_${mi}_a" value="${ev.a!==undefined?ev.a:''}" placeholder="0"></div>
             <div><label>Clasifica</label>
               <select id="ap_${mi}_c">
                 <option value="">—</option>
@@ -1064,17 +1094,17 @@ async function renderResultsPage(){
         ${j.matches.map((m,mi)=>{
           const r=res[mi+''];
           return`<div class="mrow">
-            <div class="mlbl">${gt(m.g)} ${m.d} ${m.t} — <strong>${m.h}</strong> vs <strong>${m.a}</strong></div>
+            <div class="mlbl">${gt(m.g)} ${m.d} ${m.t} — <strong>${fl(m.h,'h')}</strong> vs <strong>${fl(m.a,'a')}</strong></div>
             ${ig?`
               <div class="spair">
-                <div class="sf"><label>${m.h}</label><input type="number" min="0" max="20" id="r_${j.id}_${mi}_h" value="${r?r.h:''}" placeholder="0"></div>
+                <div class="sf"><label>${fll(m.h,'h')}</label><input type="number" min="0" max="20" id="r_${j.id}_${mi}_h" value="${r?r.h:''}" placeholder="0"></div>
                 <div class="vsep">—</div>
-                <div class="sf"><label>${m.a}</label><input type="number" min="0" max="20" id="r_${j.id}_${mi}_a" value="${r?r.a:''}" placeholder="0"></div>
+                <div class="sf" style="text-align:right;"><label style="justify-content:flex-end;display:flex;">${fll(m.a,'a')}</label><input type="number" min="0" max="20" id="r_${j.id}_${mi}_a" value="${r?r.a:''}" placeholder="0"></div>
               </div>
             `:`
               <div class="grid3">
-                <div><label>${m.h} (90')</label><input type="number" min="0" max="20" id="r_${j.id}_${mi}_h" value="${r?r.h:''}" placeholder="0"></div>
-                <div><label>${m.a} (90')</label><input type="number" min="0" max="20" id="r_${j.id}_${mi}_a" value="${r?r.a:''}" placeholder="0"></div>
+                <div><label>${fll(m.h,'h')} (90')</label><input type="number" min="0" max="20" id="r_${j.id}_${mi}_h" value="${r?r.h:''}" placeholder="0"></div>
+                <div><label>${fll(m.a,'a')} (90')</label><input type="number" min="0" max="20" id="r_${j.id}_${mi}_a" value="${r?r.a:''}" placeholder="0"></div>
                 <div><label>Clasificado</label>
                   <select id="r_${j.id}_${mi}_c">
                     <option value="">—</option>
@@ -1093,8 +1123,8 @@ async function renderResultsPage(){
                   const{cls,lbl}=calcPts(pk,r,j.phase);
                   return`<div class="pcard ${cls}">
                     <div class="pcn">${p.name}</div>
-                    <div class="pcs">${pk.h} – ${pk.a}</div>
-                    ${!ig?`<div class="pcc">${pk.c||'—'}</div>`:''}
+                    <div class="pcs">${(FL[m.h]||'')} ${pk.h} – ${pk.a} ${(FL[m.a]||'')}</div>
+                    ${!ig?`<div class="pcc">${pk.c?(FL[pk.c]||'')+' '+pk.c:'—'}</div>`:''}
                     <div class="pcp">${lbl}</div>
                   </div>`;
                 }).join('')}
