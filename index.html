@@ -302,31 +302,72 @@
     <div id="admin-pre-display"></div>
   </div>
 
-  <!-- MUNDIAL / ESTADÍSTICAS -->
+  <!-- MUNDIAL EN VIVO -->
   <div id="page-stats" class="page">
     <div class="stats-tabs">
-      <button class="stab active" onclick="switchStatTab('grupos',this)">📊 Grupos</button>
-      <button class="stab" onclick="switchStatTab('partidos',this)">📅 Partidos</button>
+      <button class="stab active" onclick="switchStatTab('bracket',this)">🏆 Bracket</button>
+      <button class="stab" onclick="switchStatTab('grupos',this)">📊 Grupos</button>
       <button class="stab" onclick="switchStatTab('goleadores',this)">⚽ Goleadores</button>
     </div>
-    <div id="stab-grupos" class="stab-page active">
-      <div class="slabel">Tabla de posiciones — todos los grupos</div>
+
+    <!-- TAB: BRACKET -->
+    <div id="stab-bracket" class="stab-page active">
+      <div class="alert ai" style="font-size:12px;">Desliza horizontalmente para ver el cuadro completo.</div>
+      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:12px;">
+        <div id="bracket-container" style="min-width:900px;display:flex;flex-direction:column;gap:0;padding:8px 4px;">
+
+          <!-- BRACKET PRINCIPAL -->
+          <div style="display:flex;align-items:center;gap:0;" id="bracket-main"></div>
+
+          <!-- SEPARADOR -->
+          <div style="height:16px;"></div>
+
+          <!-- TERCER LUGAR + FINAL LABEL -->
+          <div style="display:flex;gap:8px;justify-content:center;align-items:center;" id="bracket-bottom"></div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: GRUPOS -->
+    <div id="stab-grupos" class="stab-page">
+      <div class="fsb" style="margin-bottom:8px;">
+        <span class="slabel" style="margin:0;">Tabla de posiciones</span>
+        <button class="btn btn-accent bsm admin-tab" onclick="showAdminGrupos()">Editar</button>
+      </div>
       <div id="stats-grupos-content"><div style="text-align:center;padding:30px;color:var(--text-3);font-size:13px;">Cargando…</div></div>
     </div>
-    <div id="stab-partidos" class="stab-page">
-      <div class="slabel">Resultados y calendario</div>
-      <div id="stats-partidos-content"><div style="text-align:center;padding:30px;color:var(--text-3);font-size:13px;">Cargando…</div></div>
-    </div>
+
+    <!-- TAB: GOLEADORES -->
     <div id="stab-goleadores" class="stab-page">
-      <div class="slabel">Top goleadores del torneo</div>
+      <div class="fsb" style="margin-bottom:8px;">
+        <span class="slabel" style="margin:0;">Top goleadores</span>
+        <button class="btn btn-accent bsm admin-tab" onclick="showAdminGoleadores()">Editar</button>
+      </div>
       <div id="stats-goleadores-content"><div style="text-align:center;padding:30px;color:var(--text-3);font-size:13px;">Cargando…</div></div>
     </div>
   </div>
 
   <!-- ADMIN CLASIFICADOS PLAYOFF -->
   <div id="page-admin-playoff" class="page">
-    <div class="alert aw">Actualiza los nombres de los equipos clasificados en cada fase de playoff. Se refleja en tiempo real para todos los participantes.</div>
-    <div id="playoff-editor"></div>
+    <div class="alert aw">Actualiza equipos y resultados del bracket. Los cambios se reflejan en tiempo real en la pestaña "Mundial En Vivo".</div>
+
+    <div class="section-label" style="display:none;" id="bracket-admin-tabs-label">Editar bracket por fase</div>
+    <div class="tabs" style="margin-bottom:12px;">
+      <button class="tbtn active" onclick="switchBracketTab('r32',this)">16avos</button>
+      <button class="tbtn" onclick="switchBracketTab('r16',this)">Octavos</button>
+      <button class="tbtn" onclick="switchBracketTab('qf',this)">Cuartos</button>
+      <button class="tbtn" onclick="switchBracketTab('sf',this)">Semis</button>
+      <button class="tbtn" onclick="switchBracketTab('final',this)">Final</button>
+    </div>
+
+    <div id="bracket-tab-r32" class="bracket-tab-page active"></div>
+    <div id="bracket-tab-r16" class="bracket-tab-page" style="display:none;"></div>
+    <div id="bracket-tab-qf" class="bracket-tab-page" style="display:none;"></div>
+    <div id="bracket-tab-sf" class="bracket-tab-page" style="display:none;"></div>
+    <div id="bracket-tab-final" class="bracket-tab-page" style="display:none;"></div>
+
+    <div id="playoff-editor" style="display:none;"></div>
   </div>
 
   <!-- REGLAS -->
@@ -723,7 +764,7 @@ window.showPage=(id,btn)=>{
   if(id==='stats') renderStatsPage();
   if(id==='admin-picks')renderAdminPicksPage();
   if(id==='resultados')renderResultsPage();
-  if(id==='admin-playoff')renderPlayoffEditor();
+  if(id==='admin-playoff')renderAdminPlayoffPage();
   if(id==='pretorneo')renderMyPre();
   if(id==='admin-pre')renderAdminPre();
 };
@@ -1295,21 +1336,12 @@ window.saveRealTorneo=async()=>{
   }catch(e){toast('Error al guardar');}
 };
 
-// ── STATS PAGE ───────────────────────────────────────────────────
-const API_KEY = '86ea278fdbd11025effdc1bedd038ed4';
-const API_URL = 'https://v3.football.api-sports.io';
-let statsLoaded = {grupos:false, partidos:false, goleadores:false};
-
-async function apiGet(endpoint){
-  const res = await fetch(`${API_URL}${endpoint}`, {
-    headers: {'x-apisports-key': API_KEY}
-  });
-  return res.json();
-}
+// ── MUNDIAL EN VIVO ──────────────────────────────────────────────
 
 function renderStatsPage(){
-  // Cargar grupos por defecto al abrir la pestaña
-  if(!statsLoaded.grupos) loadGrupos();
+  loadBracket();
+  loadGrupos();
+  loadGoleadores();
 }
 
 window.switchStatTab = (tab, btn) => {
@@ -1317,180 +1349,327 @@ window.switchStatTab = (tab, btn) => {
   document.querySelectorAll('.stab').forEach(b => b.classList.remove('active'));
   document.getElementById('stab-'+tab).classList.add('active');
   if(btn) btn.classList.add('active');
-  if(tab==='grupos' && !statsLoaded.grupos) loadGrupos();
-  if(tab==='partidos' && !statsLoaded.partidos) loadPartidos();
-  if(tab==='goleadores' && !statsLoaded.goleadores) loadGoleadores();
 };
 
+// ── BRACKET ──────────────────────────────────────────────────────
+// Estructura del bracket: cada ronda tiene partidos con local y visita
+// Los datos se guardan en Firebase en config/bracketData
+
+const BRACKET_ROUNDS_L = ['16avos','Octavos','Cuartos','Semis'];
+const BRACKET_ROUNDS_R = ['16avos','Octavos','Cuartos','Semis'];
+
+// Partidos por ronda (índice 0=16avos, 1=octavos, 2=cuartos, 3=semis)
+// Mitad izquierda: partidos 1-8 de 16avos, 1-4 octavos, 1-2 cuartos, semi 1
+// Mitad derecha: partidos 9-16 de 16avos, 5-8 octavos, 3-4 cuartos, semi 2
+const DEFAULT_BRACKET = {
+  l_r32: Array.from({length:8},(_,i)=>({h:`P${i*2+1}`,a:`P${i*2+2}`,s:''})),
+  r_r32: Array.from({length:8},(_,i)=>({h:`P${i*2+17}`,a:`P${i*2+18}`,s:''})),
+  l_r16: Array.from({length:4},(_,i)=>({h:`Gan. L16-${i*2+1}`,a:`Gan. L16-${i*2+2}`,s:''})),
+  r_r16: Array.from({length:4},(_,i)=>({h:`Gan. R16-${i*2+1}`,a:`Gan. R16-${i*2+2}`,s:''})),
+  l_qf:  Array.from({length:2},(_,i)=>({h:`Gan. L8-${i*2+1}`,a:`Gan. L8-${i*2+2}`,s:''})),
+  r_qf:  Array.from({length:2},(_,i)=>({h:`Gan. R8-${i*2+1}`,a:`Gan. R8-${i*2+2}`,s:''})),
+  l_sf:  [{h:'Gan. LQ1',a:'Gan. LQ2',s:''}],
+  r_sf:  [{h:'Gan. RQ1',a:'Gan. RQ2',s:''}],
+  third: {h:'Perd. Semi 1',a:'Perd. Semi 2',s:''},
+  final: {h:'Gan. Semi 1',a:'Gan. Semi 2',s:''},
+  champion: ''
+};
+
+let bracketData = JSON.parse(JSON.stringify(DEFAULT_BRACKET));
+
+async function loadBracket(){
+  try {
+    const snap = await getDoc(doc(db,'config','bracketData'));
+    if(snap.exists()) bracketData = {...DEFAULT_BRACKET, ...snap.data()};
+  } catch(e){ console.error(e); }
+  renderBracket();
+}
+
+function mkTeam(name, score, winner){
+  const f = FL[name]||'';
+  const bg = winner ? 'background:#eaf3de;' : '';
+  const fw = winner ? 'font-weight:600;' : '';
+  return `<div style="display:flex;align-items:center;gap:4px;padding:3px 6px;border-radius:3px;${bg}min-width:110px;max-width:130px;">
+    <span style="font-size:13px;flex-shrink:0;">${f}</span>
+    <span style="font-size:11px;${fw}flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${name||'—'}</span>
+    ${score?`<span style="font-size:11px;font-weight:700;color:var(--accent);margin-left:auto;">${score}</span>`:''}
+  </div>`;
+}
+
+function mkMatch(m, small){
+  const scored = m.s && m.s.includes('-');
+  let hScore='', aScore='', hWin=false, aWin=false;
+  if(scored){
+    const parts = m.s.split('-');
+    hScore = parts[0]; aScore = parts[1];
+    hWin = parseInt(hScore) > parseInt(aScore);
+    aWin = parseInt(aScore) > parseInt(hScore);
+  }
+  return `<div style="background:var(--surface);border:0.5px solid var(--border);border-radius:6px;overflow:hidden;${small?'':'margin:0;'}">
+    ${mkTeam(m.h, hScore, hWin && scored)}
+    <div style="height:0.5px;background:var(--border);"></div>
+    ${mkTeam(m.a, aScore, aWin && scored)}
+  </div>`;
+}
+
+function mkConnectorRight(count, gap){
+  // Conectores de izquierda a derecha (bracket izquierdo)
+  let html = `<div style="display:flex;flex-direction:column;width:14px;flex-shrink:0;">`;
+  for(let i=0;i<count;i++){
+    const h = gap/2;
+    html += `<div style="height:${h}px;border-right:1.5px solid var(--border);border-bottom:1.5px solid var(--border);border-radius:0 0 3px 0;"></div>`;
+    html += `<div style="height:${h}px;border-right:1.5px solid var(--border);border-top:1.5px solid var(--border);border-radius:0 3px 0 0;"></div>`;
+    if(i<count-1) html+=`<div style="flex:1;"></div>`;
+  }
+  html += `</div>`;
+  return html;
+}
+
+function mkConnectorLeft(count, gap){
+  let html = `<div style="display:flex;flex-direction:column;width:14px;flex-shrink:0;">`;
+  for(let i=0;i<count;i++){
+    const h = gap/2;
+    html += `<div style="height:${h}px;border-left:1.5px solid var(--border);border-bottom:1.5px solid var(--border);border-radius:0 0 0 3px;"></div>`;
+    html += `<div style="height:${h}px;border-left:1.5px solid var(--border);border-top:1.5px solid var(--border);border-radius:3px 0 0 0;"></div>`;
+    if(i<count-1) html+=`<div style="flex:1;"></div>`;
+  }
+  html += `</div>`;
+  return html;
+}
+
+function mkRound(matches, label){
+  const matchH = 52; // altura aprox de cada partido
+  const gap = 16;
+  let html = `<div style="display:flex;flex-direction:column;flex-shrink:0;">
+    <div style="font-size:9px;font-weight:600;color:var(--text-3);text-align:center;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;">${label}</div>
+    <div style="display:flex;flex-direction:column;gap:${gap}px;">`;
+  matches.forEach(m => { html += mkMatch(m); });
+  html += `</div></div>`;
+  return html;
+}
+
+function renderBracket(){
+  const b = bracketData;
+
+  // LADO IZQUIERDO: 16avos(8) → Octavos(4) → Cuartos(2) → Semi(1)
+  let leftHTML = '';
+  leftHTML += mkRound(b.l_r32, '16avos');
+  leftHTML += mkConnectorRight(4, 68);
+  leftHTML += mkRound(b.l_r16, 'Octavos');
+  leftHTML += mkConnectorRight(2, 120);
+  leftHTML += mkRound(b.l_qf, 'Cuartos');
+  leftHTML += mkConnectorRight(1, 120);
+  leftHTML += mkRound(b.l_sf, 'Semis');
+
+  // COPA CENTRAL
+  const champ = b.champion || '';
+  const champFlag = FL[champ]||'';
+  let centerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 12px;flex-shrink:0;gap:8px;">
+    <img src="https://football-logos.cc/img/tournaments/t_1.png" alt="Copa Mundial FIFA 2026"
+      style="width:72px;height:auto;object-fit:contain;"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+    <div style="display:none;flex-direction:column;align-items:center;gap:4px;">
+      <div style="font-size:36px;">🏆</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-size:9px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Final · 19 jul</div>
+      ${mkMatch(b.final)}
+    </div>
+    ${champ?`<div style="background:#1a1a2e;color:#fff;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:4px;"><span style="font-size:14px;">${champFlag}</span> ${champ}</div>`:'<div style="font-size:10px;color:var(--text-3);">Campeón por definir</div>'}
+  </div>`;
+
+  // LADO DERECHO: Semi(1) → Cuartos(2) → Octavos(4) → 16avos(8)
+  let rightHTML = '';
+  rightHTML += mkRound(b.r_sf, 'Semis');
+  rightHTML += mkConnectorLeft(1, 120);
+  rightHTML += mkRound(b.r_qf, 'Cuartos');
+  rightHTML += mkConnectorLeft(2, 120);
+  rightHTML += mkRound(b.r_r16, 'Octavos');
+  rightHTML += mkConnectorLeft(4, 68);
+  rightHTML += mkRound(b.r_r32, '16avos');
+
+  document.getElementById('bracket-main').innerHTML = leftHTML + centerHTML + rightHTML;
+
+  // TERCER LUGAR
+  const thirdHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+    <div style="font-size:9px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.5px;">Tercer lugar · 18 jul</div>
+    ${mkMatch(b.third)}
+  </div>`;
+  document.getElementById('bracket-bottom').innerHTML = thirdHTML;
+}
+
+// ── GRUPOS ────────────────────────────────────────────────────────
+const GROUP_NAMES = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+const GROUP_TEAMS = {
+  A:['México','Sudáfrica','Corea del Sur','Rep. Checa'],
+  B:['Canadá','Bosnia y Herz.','Catar','Suiza'],
+  C:['Brasil','Marruecos','Haití','Escocia'],
+  D:['Estados Unidos','Paraguay','Australia','Turquía'],
+  E:['Alemania','Curazao','Costa de Marfil','Ecuador'],
+  F:['Países Bajos','Japón','Suecia','Túnez'],
+  G:['Bélgica','Egipto','Irán','Nueva Zelanda'],
+  H:['España','Cabo Verde','Arabia Saudita','Uruguay'],
+  I:['Francia','Senegal','Irak','Noruega'],
+  J:['Argentina','Argelia','Austria','Jordania'],
+  K:['Portugal','RD Congo','Uzbekistán','Colombia'],
+  L:['Inglaterra','Croacia','Ghana','Panamá']
+};
+
+let gruposData = {};
+
 async function loadGrupos(){
-  const el = document.getElementById('stats-grupos-content');
-  el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-3);font-size:13px;">Cargando grupos…</div>';
   try {
-    const data = await apiGet('/standings?league=1&season=2026');
-    const groups = data.response?.[0]?.league?.standings || [];
-    if(!groups.length){ el.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-3);">Sin datos disponibles.</div>'; return; }
-
-    // Renderizar cada grupo
-    let html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;">';
-    groups.forEach(group => {
-      const gName = group[0]?.group || 'Grupo';
-      html += `<div class="card" style="padding:0;overflow:hidden;">
-        <div style="padding:8px 12px;background:var(--accent);color:#fff;font-size:12px;font-weight:600;">${gName}</div>
-        <table style="width:100%;border-collapse:collapse;font-size:12px;">
-          <thead><tr style="border-bottom:0.5px solid var(--border);">
-            <th style="text-align:left;padding:5px 8px;font-size:10px;color:var(--text-3);font-weight:600;">Equipo</th>
-            <th style="text-align:center;padding:5px 4px;font-size:10px;color:var(--text-3);font-weight:600;">PJ</th>
-            <th style="text-align:center;padding:5px 4px;font-size:10px;color:var(--text-3);font-weight:600;">PG</th>
-            <th style="text-align:center;padding:5px 4px;font-size:10px;color:var(--text-3);font-weight:600;">PE</th>
-            <th style="text-align:center;padding:5px 4px;font-size:10px;color:var(--text-3);font-weight:600;">PP</th>
-            <th style="text-align:center;padding:5px 4px;font-size:10px;color:var(--text-3);font-weight:600;">GD</th>
-            <th style="text-align:center;padding:5px 4px;font-size:10px;color:var(--text-3);font-weight:600;color:var(--accent);">Pts</th>
-          </tr></thead>
-          <tbody>
-            ${group.map((t,i) => {
-              const qualified = i < 2;
-              const third = i === 2;
-              const bg = qualified ? 'background:#f0f9f0;' : third ? 'background:#fff8e8;' : '';
-              const flag = FL[t.team.name] || '';
-              return `<tr style="border-bottom:0.5px solid var(--border-light);${bg}">
-                <td style="padding:6px 8px;">
-                  <div style="display:flex;align-items:center;gap:5px;">
-                    <span style="font-size:11px;font-weight:600;color:var(--text-3);width:14px;">${t.rank}</span>
-                    <span style="font-size:14px;">${flag}</span>
-                    <span style="font-size:12px;font-weight:${qualified?'600':'400'};">${t.team.name}</span>
-                  </div>
-                </td>
-                <td style="text-align:center;padding:6px 4px;">${t.all.played}</td>
-                <td style="text-align:center;padding:6px 4px;">${t.all.win}</td>
-                <td style="text-align:center;padding:6px 4px;">${t.all.draw}</td>
-                <td style="text-align:center;padding:6px 4px;">${t.all.lose}</td>
-                <td style="text-align:center;padding:6px 4px;">${t.goalsDiff>0?'+':''}${t.goalsDiff}</td>
-                <td style="text-align:center;padding:6px 4px;font-weight:700;color:var(--accent);">${t.points}</td>
-              </tr>`;
-            }).join('')}
-          </tbody>
-        </table>
-      </div>`;
-    });
-    html += '</div>';
-    html += '<div style="margin-top:8px;font-size:11px;color:var(--text-3);padding:4px 0;"><span style="display:inline-block;width:10px;height:10px;background:#f0f9f0;border:0.5px solid #c0dd97;border-radius:2px;margin-right:4px;"></span>Clasificado directo &nbsp;&nbsp; <span style="display:inline-block;width:10px;height:10px;background:#fff8e8;border:0.5px solid #fac775;border-radius:2px;margin-right:4px;"></span>Posible mejor 3ro</div>';
-    el.innerHTML = html;
-    statsLoaded.grupos = true;
-  } catch(e) {
-    el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--red);">Error al cargar datos. Intenta de nuevo.</div>';
-    console.error(e);
-  }
-}
-
-async function loadPartidos(){
-  const el = document.getElementById('stats-partidos-content');
-  el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-3);font-size:13px;">Cargando partidos…</div>';
-  try {
-    // Traer partidos del día actual y anteriores recientes
-    const today = new Date().toISOString().split('T')[0];
-    const data = await apiGet(`/fixtures?league=1&season=2026&from=2026-06-11&to=${today}`);
-    const fixtures = data.response || [];
-    if(!fixtures.length){ el.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-3);">Sin partidos disponibles.</div>'; return; }
-
-    // Agrupar por fecha
-    const byDate = {};
-    fixtures.forEach(f => {
-      const d = f.fixture.date.split('T')[0];
-      if(!byDate[d]) byDate[d] = [];
-      byDate[d].push(f);
-    });
-
-    let html = '';
-    Object.keys(byDate).sort().reverse().forEach(date => {
-      const dateObj = new Date(date+'T12:00:00');
-      const dateStr = dateObj.toLocaleDateString('es-CL',{weekday:'short',day:'numeric',month:'short'});
-      html += `<div class="slabel">${dateStr}</div>`;
-      html += '<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px;">';
-      byDate[date].forEach(f => {
-        const home = f.teams.home;
-        const away = f.teams.away;
-        const score = f.goals;
-        const status = f.fixture.status.short;
-        const finished = ['FT','AET','PEN'].includes(status);
-        const live = ['1H','HT','2H','ET','P'].includes(status);
-        const fh = FL[home.name]||'';
-        const fa = FL[away.name]||'';
-        html += `<div style="background:#fff;border:0.5px solid var(--border);border-radius:8px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;">
-          <div style="flex:1;display:flex;align-items:center;gap:6px;font-size:13px;">
-            <span style="font-size:15px;">${fh}</span>
-            <span style="font-weight:${finished&&score.home>score.away?'600':'400'};">${home.name}</span>
-          </div>
-          <div style="text-align:center;min-width:70px;">
-            ${finished||live
-              ? `<span style="font-size:15px;font-weight:700;color:var(--accent);">${score.home??'–'} – ${score.away??'–'}</span>
-                 ${live?`<div style="font-size:10px;color:#e24b4a;font-weight:600;">${status}</div>`:''}
-                 ${finished?`<div style="font-size:10px;color:var(--text-3);">${status==='PEN'?'Pen.':status==='AET'?'Pról.':'FIN'}</div>`:''}`
-              : `<span style="font-size:11px;color:var(--text-3);">${f.fixture.date.split('T')[1].slice(0,5)}</span>`
-            }
-          </div>
-          <div style="flex:1;display:flex;align-items:center;justify-content:flex-end;gap:6px;font-size:13px;">
-            <span style="font-weight:${finished&&score.away>score.home?'600':'400'};">${away.name}</span>
-            <span style="font-size:15px;">${fa}</span>
-          </div>
-        </div>`;
+    const snap = await getDoc(doc(db,'config','gruposData'));
+    if(snap.exists()) gruposData = snap.data();
+    else {
+      // Inicializar con equipos en 0
+      GROUP_NAMES.forEach(g => {
+        gruposData[g] = GROUP_TEAMS[g].map(t => ({t,pj:0,pg:0,pe:0,pp:0,gf:0,gc:0,pts:0}));
       });
-      html += '</div>';
-    });
-    el.innerHTML = html;
-    statsLoaded.partidos = true;
-  } catch(e) {
-    el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--red);">Error al cargar datos.</div>';
-    console.error(e);
-  }
+    }
+  } catch(e){ console.error(e); }
+  renderGrupos();
 }
+
+function renderGrupos(){
+  const el = document.getElementById('stats-grupos-content');
+  if(!el) return;
+  let html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;">';
+  GROUP_NAMES.forEach(g => {
+    const teams = gruposData[g] || GROUP_TEAMS[g].map(t=>({t,pj:0,pg:0,pe:0,pp:0,gf:0,gc:0,pts:0}));
+    const sorted = [...teams].sort((a,b)=>b.pts-a.pts||(b.gf-b.gc)-(a.gf-a.gc)||b.gf-a.gf);
+    html += `<div class="card" style="padding:0;overflow:hidden;">
+      <div style="padding:7px 12px;background:var(--accent);color:#fff;font-size:12px;font-weight:600;">Grupo ${g}</div>
+      <table style="width:100%;border-collapse:collapse;font-size:11px;">
+        <thead><tr style="border-bottom:0.5px solid var(--border);">
+          <th style="text-align:left;padding:4px 8px;font-size:10px;color:var(--text-3);font-weight:600;">Equipo</th>
+          <th style="text-align:center;padding:4px 3px;font-size:10px;color:var(--text-3);">PJ</th>
+          <th style="text-align:center;padding:4px 3px;font-size:10px;color:var(--text-3);">PG</th>
+          <th style="text-align:center;padding:4px 3px;font-size:10px;color:var(--text-3);">PE</th>
+          <th style="text-align:center;padding:4px 3px;font-size:10px;color:var(--text-3);">PP</th>
+          <th style="text-align:center;padding:4px 3px;font-size:10px;color:var(--text-3);">GD</th>
+          <th style="text-align:center;padding:4px 6px;font-size:10px;color:var(--accent);font-weight:700;">Pts</th>
+        </tr></thead>
+        <tbody>
+          ${sorted.map((t,i)=>{
+            const gd = (t.gf||0)-(t.gc||0);
+            const qual = i<2;
+            const bg = qual?'background:#f0f9f0;':'';
+            const flag = FL[t.t]||'';
+            return `<tr style="border-bottom:0.5px solid var(--border-light);${bg}">
+              <td style="padding:5px 8px;"><div style="display:flex;align-items:center;gap:4px;">
+                <span style="font-size:10px;color:var(--text-3);width:12px;">${i+1}</span>
+                <span style="font-size:13px;">${flag}</span>
+                <span style="font-size:11px;font-weight:${qual?'600':'400'};">${t.t}</span>
+              </div></td>
+              <td style="text-align:center;padding:5px 3px;">${t.pj||0}</td>
+              <td style="text-align:center;padding:5px 3px;">${t.pg||0}</td>
+              <td style="text-align:center;padding:5px 3px;">${t.pe||0}</td>
+              <td style="text-align:center;padding:5px 3px;">${t.pp||0}</td>
+              <td style="text-align:center;padding:5px 3px;">${gd>0?'+':''}${gd}</td>
+              <td style="text-align:center;padding:5px 6px;font-weight:700;color:var(--accent);">${t.pts||0}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>`;
+  });
+  html += '</div><div style="margin-top:6px;font-size:11px;color:var(--text-3);"><span style="display:inline-block;width:10px;height:10px;background:#f0f9f0;border:0.5px solid #c0dd97;border-radius:2px;margin-right:4px;"></span>Clasificados directos</div>';
+  el.innerHTML = html;
+}
+
+window.showAdminGrupos = async () => {
+  if(!isAdmin) return;
+  const g = prompt('Ingresa la letra del grupo a editar (A-L):')?.toUpperCase();
+  if(!g || !GROUP_NAMES.includes(g)) return;
+  const teams = gruposData[g] || GROUP_TEAMS[g].map(t=>({t,pj:0,pg:0,pe:0,pp:0,gf:0,gc:0,pts:0}));
+  const updated = [];
+  for(const team of teams){
+    const input = prompt(`${team.t}\nFormato: PJ,PG,PE,PP,GF,GC\nActual: ${team.pj},${team.pg},${team.pe},${team.pp},${team.gf},${team.gc}`);
+    if(input === null) return;
+    const parts = input.split(',').map(Number);
+    updated.push({t:team.t,pj:parts[0]||0,pg:parts[1]||0,pe:parts[2]||0,pp:parts[3]||0,gf:parts[4]||0,gc:parts[5]||0,pts:(parts[1]||0)*3+(parts[2]||0)});
+  }
+  if(!gruposData) gruposData = {};
+  gruposData[g] = updated;
+  try {
+    await setDoc(doc(db,'config','gruposData'), gruposData);
+    toast(`Grupo ${g} actualizado ✓`);
+    renderGrupos();
+  } catch(e){ toast('Error al guardar'); }
+};
+
+// ── GOLEADORES ───────────────────────────────────────────────────
+let goleadoresData = [];
 
 async function loadGoleadores(){
-  const el = document.getElementById('stats-goleadores-content');
-  el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-3);font-size:13px;">Cargando goleadores…</div>';
   try {
-    const data = await apiGet('/players/topscorers?league=1&season=2026');
-    const players = data.response || [];
-    if(!players.length){ el.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-3);">Sin datos de goleadores aún.</div>'; return; }
-
-    let html = '<div class="card" style="padding:0;overflow:hidden;"><table style="width:100%;border-collapse:collapse;font-size:13px;">';
-    html += `<thead><tr style="border-bottom:0.5px solid var(--border);">
-      <th style="text-align:center;padding:7px 10px;font-size:11px;color:var(--text-3);font-weight:600;width:36px;">#</th>
-      <th style="text-align:left;padding:7px 10px;font-size:11px;color:var(--text-3);font-weight:600;">Jugador</th>
-      <th style="text-align:left;padding:7px 10px;font-size:11px;color:var(--text-3);font-weight:600;">Selección</th>
-      <th style="text-align:center;padding:7px 10px;font-size:11px;color:var(--text-3);font-weight:600;">PJ</th>
-      <th style="text-align:center;padding:7px 10px;font-size:11px;color:var(--accent);font-weight:600;">⚽</th>
-      <th style="text-align:center;padding:7px 10px;font-size:11px;color:var(--text-3);font-weight:600;">Asist.</th>
-    </tr></thead><tbody>`;
-
-    players.slice(0,15).forEach((p,i) => {
-      const player = p.player;
-      const stats = p.statistics[0];
-      const flag = FL[stats.team.name]||'';
-      html += `<tr style="border-bottom:0.5px solid var(--border-light);">
-        <td style="text-align:center;padding:8px 10px;font-weight:600;color:var(--text-3);">${i+1}</td>
-        <td style="padding:8px 10px;">
-          <div style="font-weight:500;">${player.name}</div>
-          <div style="font-size:11px;color:var(--text-3);">${player.nationality}</div>
-        </td>
-        <td style="padding:8px 10px;">
-          <div style="display:flex;align-items:center;gap:5px;">
-            <span style="font-size:15px;">${flag}</span>
-            <span style="font-size:12px;">${stats.team.name}</span>
-          </div>
-        </td>
-        <td style="text-align:center;padding:8px 10px;color:var(--text-2);">${stats.games.appearences||0}</td>
-        <td style="text-align:center;padding:8px 10px;font-weight:700;color:var(--accent);font-size:15px;">${stats.goals.total||0}</td>
-        <td style="text-align:center;padding:8px 10px;color:var(--text-2);">${stats.goals.assists||0}</td>
-      </tr>`;
-    });
-    html += '</tbody></table></div>';
-    el.innerHTML = html;
-    statsLoaded.goleadores = true;
-  } catch(e) {
-    el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--red);">Error al cargar datos.</div>';
-    console.error(e);
-  }
+    const snap = await getDoc(doc(db,'config','goleadoresData'));
+    if(snap.exists()) goleadoresData = snap.data().list || [];
+  } catch(e){ console.error(e); }
+  renderGoleadores();
 }
+
+function renderGoleadores(){
+  const el = document.getElementById('stats-goleadores-content');
+  if(!el) return;
+  if(!goleadoresData.length){
+    el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-3);font-size:13px;">Aún no hay datos de goleadores.<br>El admin puede ingresarlos con el botón "Editar".</div>';
+    return;
+  }
+  const sorted = [...goleadoresData].sort((a,b)=>b.goles-a.goles||b.asist-a.asist);
+  let html = `<div class="card" style="padding:0;overflow:hidden;"><table style="width:100%;border-collapse:collapse;font-size:13px;">
+    <thead><tr style="border-bottom:0.5px solid var(--border);">
+      <th style="text-align:center;padding:7px 8px;font-size:11px;color:var(--text-3);width:32px;">#</th>
+      <th style="text-align:left;padding:7px 8px;font-size:11px;color:var(--text-3);">Jugador</th>
+      <th style="text-align:left;padding:7px 8px;font-size:11px;color:var(--text-3);">Selección</th>
+      <th style="text-align:center;padding:7px 8px;font-size:11px;color:var(--text-3);">PJ</th>
+      <th style="text-align:center;padding:7px 8px;font-size:11px;color:var(--accent);font-weight:700;">⚽</th>
+      <th style="text-align:center;padding:7px 8px;font-size:11px;color:var(--text-3);">Asist.</th>
+    </tr></thead><tbody>`;
+  sorted.forEach((p,i)=>{
+    const flag = FL[p.seleccion]||'';
+    const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
+    html += `<tr style="border-bottom:0.5px solid var(--border-light);">
+      <td style="text-align:center;padding:8px;">${medal||i+1}</td>
+      <td style="padding:8px;font-weight:${i<3?'500':'400'};">${p.nombre}</td>
+      <td style="padding:8px;"><div style="display:flex;align-items:center;gap:5px;"><span style="font-size:15px;">${flag}</span><span style="font-size:12px;">${p.seleccion}</span></div></td>
+      <td style="text-align:center;padding:8px;color:var(--text-2);">${p.pj||0}</td>
+      <td style="text-align:center;padding:8px;font-weight:700;font-size:16px;color:var(--accent);">${p.goles}</td>
+      <td style="text-align:center;padding:8px;color:var(--text-2);">${p.asist||0}</td>
+    </tr>`;
+  });
+  html += '</tbody></table></div>';
+  el.innerHTML = html;
+}
+
+window.showAdminGoleadores = async () => {
+  if(!isAdmin) return;
+  const input = prompt('Ingresa goleadores en formato:\nNombre,Selección,PJ,Goles,Asistencias\n(uno por línea, máx 15)\n\nEjemplo:\nKylian Mbappé,Francia,5,7,2\nLionel Messi,Argentina,4,5,3');
+  if(!input) return;
+  const lines = input.trim().split('\n').filter(l=>l.trim());
+  const list = lines.map(l=>{
+    const parts = l.split(',').map(s=>s.trim());
+    return {nombre:parts[0]||'',seleccion:parts[1]||'',pj:parseInt(parts[2])||0,goles:parseInt(parts[3])||0,asist:parseInt(parts[4])||0};
+  }).filter(p=>p.nombre&&p.goles>=0);
+  try {
+    await setDoc(doc(db,'config','goleadoresData'), {list});
+    goleadoresData = list;
+    toast('Goleadores actualizados ✓');
+    renderGoleadores();
+  } catch(e){ toast('Error al guardar'); }
+};
+
+// ── BRACKET ADMIN ─────────────────────────────────────────────────
+// El admin edita el bracket desde la pestaña Clasificados (ya existente)
+// Aquí añadimos la función para guardar cambios del bracket
+window.saveBracketData = async () => {
+  try {
+    await setDoc(doc(db,'config','bracketData'), bracketData);
+    toast('Bracket guardado ✓');
+    renderBracket();
+  } catch(e){ toast('Error al guardar'); }
+};
 
 window.switchStatTab = (tab, btn) => {
   document.querySelectorAll('.stab-page').forEach(p => p.classList.remove('active'));
@@ -1618,6 +1797,106 @@ async function applyPlayoffTeams(){
     });
   });
 }
+
+// ── ADMIN PLAYOFF / BRACKET EDITOR ───────────────────────────────
+const BRACKET_TABS = {
+  r32:   {label:'16avos de final',  sides:[{key:'l_r32',label:'Mitad izquierda (P1–P8)'},{key:'r_r32',label:'Mitad derecha (P9–P16)'}]},
+  r16:   {label:'Octavos de final', sides:[{key:'l_r16',label:'Cuadro izquierdo'},{key:'r_r16',label:'Cuadro derecho'}]},
+  qf:    {label:'Cuartos de final', sides:[{key:'l_qf', label:'Cuadro izquierdo'},{key:'r_qf', label:'Cuadro derecho'}]},
+  sf:    {label:'Semifinales',      sides:[{key:'l_sf', label:'Semifinal izquierda'},{key:'r_sf',label:'Semifinal derecha'}]},
+  final: {label:'Final y 3er lugar',sides:[]}
+};
+
+async function renderAdminPlayoffPage(){
+  await loadBracket();
+  renderBracketAdminTab('r32');
+}
+
+function renderBracketAdminTab(tab){
+  const info = BRACKET_TABS[tab];
+  if(!info) return;
+  if(tab === 'final'){
+    const b = bracketData;
+    document.getElementById('bracket-tab-final').innerHTML = `
+      <div class="card"><div class="ctitle">Final · 19 jul</div>
+        <div class="grid2" style="margin-bottom:10px;">
+          <div><label>Local</label><input type="text" id="bf_final_h" value="${b.final?.h||''}"></div>
+          <div><label>Visita</label><input type="text" id="bf_final_a" value="${b.final?.a||''}"></div>
+          <div><label>Resultado (ej: 2-1)</label><input type="text" id="bf_final_s" value="${b.final?.s||''}" placeholder="2-1"></div>
+          <div><label>🏆 Campeón</label><input type="text" id="bf_champion" value="${b.champion||''}"></div>
+        </div>
+      </div>
+      <div class="card"><div class="ctitle">Tercer lugar · 18 jul</div>
+        <div class="grid2">
+          <div><label>Local</label><input type="text" id="bf_third_h" value="${b.third?.h||''}"></div>
+          <div><label>Visita</label><input type="text" id="bf_third_a" value="${b.third?.a||''}"></div>
+          <div><label>Resultado</label><input type="text" id="bf_third_s" value="${b.third?.s||''}" placeholder="1-0"></div>
+        </div>
+      </div>
+      <button class="btn ba" onclick="saveBracketTab('final')">Guardar Final y 3er lugar</button>`;
+    return;
+  }
+  let html = '';
+  info.sides.forEach(side => {
+    const matches = bracketData[side.key] || [];
+    html += `<div class="card"><div class="ctitle">${side.label}</div>`;
+    matches.forEach((m,mi) => {
+      html += `<div class="mrow" style="margin-bottom:8px;">
+        <div class="mlbl" style="font-weight:600;">Partido ${mi+1}</div>
+        <div class="grid3">
+          <div><label>Local</label><input type="text" id="bf_${side.key}_${mi}_h" value="${m.h||''}"></div>
+          <div><label>Visita</label><input type="text" id="bf_${side.key}_${mi}_a" value="${m.a||''}"></div>
+          <div><label>Resultado</label><input type="text" id="bf_${side.key}_${mi}_s" value="${m.s||''}" placeholder="2-1"></div>
+        </div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+  html += `<button class="btn ba" onclick="saveBracketTab('${tab}')">Guardar ${info.label}</button>`;
+  document.getElementById('bracket-tab-'+tab).innerHTML = html;
+}
+
+window.switchBracketTab = (tab, btn) => {
+  document.querySelectorAll('.bracket-tab-page').forEach(p => { p.style.display='none'; });
+  document.querySelectorAll('#page-admin-playoff .tabs .tbtn').forEach(b => b.classList.remove('active'));
+  const el = document.getElementById('bracket-tab-'+tab);
+  if(el) el.style.display='block';
+  if(btn) btn.classList.add('active');
+  renderBracketAdminTab(tab);
+};
+
+window.saveBracketTab = async (tab) => {
+  const info = BRACKET_TABS[tab];
+  if(tab === 'final'){
+    bracketData.final = {
+      h:document.getElementById('bf_final_h')?.value.trim()||'',
+      a:document.getElementById('bf_final_a')?.value.trim()||'',
+      s:document.getElementById('bf_final_s')?.value.trim()||''
+    };
+    bracketData.third = {
+      h:document.getElementById('bf_third_h')?.value.trim()||'',
+      a:document.getElementById('bf_third_a')?.value.trim()||'',
+      s:document.getElementById('bf_third_s')?.value.trim()||''
+    };
+    bracketData.champion = document.getElementById('bf_champion')?.value.trim()||'';
+  } else {
+    info.sides.forEach(side => {
+      const matches = bracketData[side.key]||[];
+      matches.forEach((_,mi) => {
+        bracketData[side.key][mi] = {
+          h:document.getElementById(`bf_${side.key}_${mi}_h`)?.value.trim()||'',
+          a:document.getElementById(`bf_${side.key}_${mi}_a`)?.value.trim()||'',
+          s:document.getElementById(`bf_${side.key}_${mi}_s`)?.value.trim()||''
+        };
+      });
+    });
+  }
+  try {
+    await setDoc(doc(db,'config','bracketData'), bracketData);
+    toast(`${info.label} guardado ✓`);
+    renderBracket();
+  } catch(e){ toast('Error al guardar'); console.error(e); }
+};
 </script>
 </body>
 </html>
