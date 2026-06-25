@@ -209,6 +209,7 @@
     <button class="nav-btn" onclick="showPage('picks',this)">Mis picks</button>
     <button class="nav-btn admin-tab" onclick="showPage('admin-picks',this)">Picks grupo</button>
     <button class="nav-btn admin-tab" onclick="showPage('resultados',this)">Resultados</button>
+    <button class="nav-btn admin-tab" onclick="showPage('admin-playoff',this)">Clasificados</button>
     <button class="nav-btn" onclick="showPage('pretorneo',this)">Pre-torneo</button>
     <button class="nav-btn admin-tab" onclick="showPage('admin-pre',this)">Admin pre-torneo</button>
     <button class="nav-btn" onclick="showPage('reglas',this)">Reglas</button>
@@ -289,6 +290,12 @@
       <div style="margin-top:12px;"><button class="btn ba" onclick="saveRealTorneo()">Guardar resultados reales</button></div>
     </div>
     <div id="admin-pre-display"></div>
+  </div>
+
+  <!-- ADMIN CLASIFICADOS PLAYOFF -->
+  <div id="page-admin-playoff" class="page">
+    <div class="alert aw">Actualiza los nombres de los equipos clasificados en cada fase de playoff. Se refleja en tiempo real para todos los participantes.</div>
+    <div id="playoff-editor"></div>
   </div>
 
   <!-- REGLAS -->
@@ -662,6 +669,7 @@ onAuthStateChanged(auth,user=>{
     document.getElementById('app').style.display='block';
     document.getElementById('hdr-user').textContent=CUName+(isAdmin?' · Admin':'');
     document.querySelectorAll('.admin-tab').forEach(el=>el.style.display=isAdmin?'block':'none');
+    await applyPlayoffTeams();
     renderRanking();
     renderNextDeadlineBanner();
     setInterval(renderNextDeadlineBanner,60000);
@@ -683,6 +691,7 @@ window.showPage=(id,btn)=>{
   if(id==='picks')renderMyPicksPage();
   if(id==='admin-picks')renderAdminPicksPage();
   if(id==='resultados')renderResultsPage();
+  if(id==='admin-playoff')renderPlayoffEditor();
   if(id==='pretorneo')renderMyPre();
   if(id==='admin-pre')renderAdminPre();
 };
@@ -1253,6 +1262,127 @@ window.saveRealTorneo=async()=>{
     renderRanking();renderAdminPre();
   }catch(e){toast('Error al guardar');}
 };
+
+// ── ADMIN CLASIFICADOS PLAYOFF ────────────────────────────────────
+// Fases de playoff y sus partidos con equipos editables
+const PLAYOFF_PHASES = [
+  {id:'r32', label:'16avos de final'},
+  {id:'r16', label:'Octavos de final'},
+  {id:'qf',  label:'Cuartos de final'},
+  {id:'sf',  label:'Semifinales'},
+  {id:'3rd', label:'Tercer lugar'},
+  {id:'final',label:'Final'},
+];
+
+async function renderPlayoffEditor(){
+  // Cargar nombres guardados desde Firebase
+  const snap = await getDoc(doc(db,'config','playoffTeams'));
+  const saved = snap.exists() ? snap.data() : {};
+
+  const playoffCal = CAL.filter(j => PLAYOFF_PHASES.some(p => p.id === j.id));
+
+  let html = '';
+  playoffCal.forEach(j => {
+    const phase = PLAYOFF_PHASES.find(p => p.id === j.id);
+    html += `<div class="card" style="margin-bottom:14px;">
+      <div class="ctitle">${phase.label}</div>
+      ${j.matches.map((m,mi) => {
+        const key = `${j.id}_${mi}`;
+        const savedH = saved[key+'_h'] || m.h;
+        const savedA = saved[key+'_a'] || m.a;
+        const flagH = FL[savedH] || '';
+        const flagA = FL[savedA] || '';
+        return `<div class="mrow" style="margin-bottom:8px;">
+          <div class="mlbl" style="margin-bottom:6px;">${m.d} — Partido ${mi+1}</div>
+          <div style="display:grid;grid-template-columns:1fr 24px 1fr;gap:6px;align-items:end;">
+            <div>
+              <label style="display:flex;align-items:center;gap:4px;">
+                <span style="font-size:14px;">${flagH}</span> Local
+              </label>
+              <input type="text" id="pt_${j.id}_${mi}_h"
+                value="${savedH}"
+                placeholder="Equipo local"
+                oninput="updateFlag('${j.id}',${mi},'h')"
+                style="font-size:13px;">
+            </div>
+            <div style="text-align:center;padding-bottom:8px;font-size:11px;color:var(--text-3);">vs</div>
+            <div>
+              <label style="display:flex;align-items:center;justify-content:flex-end;gap:4px;">
+                Visita <span style="font-size:14px;">${flagA}</span>
+              </label>
+              <input type="text" id="pt_${j.id}_${mi}_a"
+                value="${savedA}"
+                placeholder="Equipo visita"
+                oninput="updateFlag('${j.id}',${mi},'a')"
+                style="font-size:13px;text-align:right;">
+            </div>
+          </div>
+        </div>`;
+      }).join('')}
+      <div style="margin-top:10px;">
+        <button class="btn ba bsm" onclick="savePlayoffPhase('${j.id}')">
+          Guardar ${phase.label}
+        </button>
+      </div>
+    </div>`;
+  });
+
+  document.getElementById('playoff-editor').innerHTML = html;
+}
+
+window.updateFlag = (jid, mi, side) => {
+  const input = document.getElementById(`pt_${jid}_${mi}_${side}`);
+  if(!input) return;
+  const val = input.value.trim();
+  const flag = FL[val] || '';
+  const label = input.previousElementSibling;
+  if(!label) return;
+  if(side === 'h') {
+    label.innerHTML = `<span style="font-size:14px;">${flag}</span> Local`;
+  } else {
+    label.innerHTML = `Visita <span style="font-size:14px;">${flag}</span>`;
+  }
+};
+
+window.savePlayoffPhase = async (jid) => {
+  const j = CAL.find(x => x.id === jid);
+  if(!j) return;
+
+  // Cargar datos actuales para no pisar otras fases
+  const snap = await getDoc(doc(db,'config','playoffTeams'));
+  const current = snap.exists() ? snap.data() : {};
+
+  j.matches.forEach((_,mi) => {
+    const hEl = document.getElementById(`pt_${jid}_${mi}_h`);
+    const aEl = document.getElementById(`pt_${jid}_${mi}_a`);
+    if(hEl) current[`${jid}_${mi}_h`] = hEl.value.trim() || j.matches[mi].h;
+    if(aEl) current[`${jid}_${mi}_a`] = aEl.value.trim() || j.matches[mi].a;
+  });
+
+  try {
+    await setDoc(doc(db,'config','playoffTeams'), current);
+    toast('Clasificados guardados ✓');
+    // Actualizar el calendario en memoria para que picks y resultados
+    // usen los nombres nuevos automáticamente
+    await applyPlayoffTeams();
+    renderPlayoffEditor();
+  } catch(e) { toast('Error al guardar'); console.error(e); }
+};
+
+// Aplica los nombres guardados en Firebase al calendario en memoria
+async function applyPlayoffTeams(){
+  const snap = await getDoc(doc(db,'config','playoffTeams'));
+  if(!snap.exists()) return;
+  const saved = snap.data();
+  CAL.forEach(j => {
+    if(!PLAYOFF_PHASES.some(p => p.id === j.id)) return;
+    j.matches.forEach((m,mi) => {
+      const key = `${j.id}_${mi}`;
+      if(saved[key+'_h']) m.h = saved[key+'_h'];
+      if(saved[key+'_a']) m.a = saved[key+'_a'];
+    });
+  });
+}
 </script>
 </body>
 </html>
