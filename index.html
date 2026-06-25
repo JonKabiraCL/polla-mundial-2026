@@ -170,6 +170,15 @@
   .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--accent);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;z-index:999;transition:transform .3s;pointer-events:none;}
   .toast.show{transform:translateX(-50%) translateY(0);}
 
+  /* STATS TABS */
+  .stats-tabs { display:flex; gap:8px; margin:12px 0; flex-wrap:wrap; }
+  .stab { padding:7px 16px; border-radius:20px; font-size:13px; font-weight:500; cursor:pointer; border:0.5px solid var(--border); background:var(--surface); color:var(--text-2); transition:all .15s; }
+  .stab:hover { border-color:var(--accent); color:var(--accent); }
+  .stab.active { background:var(--accent); color:#fff; border-color:var(--accent); }
+  .stab-page { display:none; }
+  .stab-page.active { display:block; }
+  api-sports-widget { display:block; min-height:300px; }
+
   @media(max-width:560px){
     .grid2,.grid3,.grid4{grid-template-columns:1fr;}
     .nav-btn{padding:9px 10px;font-size:11px;}
@@ -207,6 +216,7 @@
     <button class="nav-btn active" onclick="showPage('ranking',this)">Ranking</button>
     <button class="nav-btn" onclick="showPage('deadlines',this)">Fechas límite</button>
     <button class="nav-btn" onclick="showPage('picks',this)">Mis picks</button>
+    <button class="nav-btn" onclick="showPage('stats',this)">Mundial</button>
     <button class="nav-btn admin-tab" onclick="showPage('admin-picks',this)">Picks grupo</button>
     <button class="nav-btn admin-tab" onclick="showPage('resultados',this)">Resultados</button>
     <button class="nav-btn admin-tab" onclick="showPage('admin-playoff',this)">Clasificados</button>
@@ -290,6 +300,74 @@
       <div style="margin-top:12px;"><button class="btn ba" onclick="saveRealTorneo()">Guardar resultados reales</button></div>
     </div>
     <div id="admin-pre-display"></div>
+  </div>
+
+  <!-- MUNDIAL / ESTADÍSTICAS -->
+  <div id="page-stats" class="page">
+
+    <!-- Widget config global — API key + parámetros del Mundial 2026 -->
+    <api-sports-widget
+      data-type="config"
+      data-key="86ea278fdbd11025effdc1bedd038ed4"
+      data-sport="football"
+      data-lang="es"
+      data-theme="white"
+      data-show-errors="false"
+      data-show-logos="true"
+      data-refresh="60"
+      data-standings="true"
+      data-target-standings="true"
+      data-target-game="#wc-game-detail"
+      data-target-player="modal"
+      data-target-team="modal"
+      data-tab="results"
+      data-league="1"
+      data-season="2026"
+    ></api-sports-widget>
+
+    <!-- Tabs internas -->
+    <div class="stats-tabs">
+      <button class="stab active" onclick="switchStatTab('grupos',this)">📊 Grupos</button>
+      <button class="stab" onclick="switchStatTab('partidos',this)">📅 Partidos</button>
+      <button class="stab" onclick="switchStatTab('goleadores',this)">⚽ Goleadores</button>
+    </div>
+
+    <!-- TAB: GRUPOS -->
+    <div id="stab-grupos" class="stab-page active">
+      <div class="slabel">Tabla de posiciones — todos los grupos</div>
+      <div style="background:#fff;border:0.5px solid var(--border);border-radius:12px;overflow:hidden;min-height:400px;">
+        <api-sports-widget data-type="standings"></api-sports-widget>
+      </div>
+    </div>
+
+    <!-- TAB: PARTIDOS -->
+    <div id="stab-partidos" class="stab-page">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;">
+        <div>
+          <div class="slabel">Calendario y resultados</div>
+          <div style="background:#fff;border:0.5px solid var(--border);border-radius:12px;overflow:hidden;min-height:500px;">
+            <api-sports-widget data-type="league"></api-sports-widget>
+          </div>
+        </div>
+        <div>
+          <div class="slabel">Detalle del partido</div>
+          <div id="wc-game-detail" style="background:#fff;border:0.5px solid var(--border);border-radius:12px;overflow:hidden;min-height:500px;">
+            <div style="display:flex;align-items:center;justify-content:center;height:200px;color:var(--text-3);font-size:13px;">
+              Haz clic en un partido para ver el detalle
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: GOLEADORES -->
+    <div id="stab-goleadores" class="stab-page">
+      <div class="slabel">Top goleadores del torneo</div>
+      <div style="background:#fff;border:0.5px solid var(--border);border-radius:12px;overflow:hidden;min-height:400px;">
+        <api-sports-widget data-type="topscorers"></api-sports-widget>
+      </div>
+    </div>
+
   </div>
 
   <!-- ADMIN CLASIFICADOS PLAYOFF -->
@@ -689,6 +767,7 @@ window.showPage=(id,btn)=>{
   if(id==='ranking'){renderRanking();renderNextDeadlineBanner();}
   if(id==='deadlines')renderDeadlinesPage();
   if(id==='picks')renderMyPicksPage();
+  if(id==='stats') renderStatsPage();
   if(id==='admin-picks')renderAdminPicksPage();
   if(id==='resultados')renderResultsPage();
   if(id==='admin-playoff')renderPlayoffEditor();
@@ -1263,7 +1342,27 @@ window.saveRealTorneo=async()=>{
   }catch(e){toast('Error al guardar');}
 };
 
-// ── ADMIN CLASIFICADOS PLAYOFF ────────────────────────────────────
+// ── STATS PAGE ───────────────────────────────────────────────────
+let widgetScriptLoaded = false;
+
+function renderStatsPage(){
+  if(!widgetScriptLoaded){
+    const s = document.createElement('script');
+    s.type = 'module';
+    s.crossOrigin = 'anonymous';
+    s.src = 'https://widgets.api-sports.io/3.1.0/widgets.js';
+    document.head.appendChild(s);
+    widgetScriptLoaded = true;
+  }
+}
+
+window.switchStatTab = (tab, btn) => {
+  document.querySelectorAll('.stab-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.stab').forEach(b => b.classList.remove('active'));
+  document.getElementById('stab-'+tab).classList.add('active');
+  if(btn) btn.classList.add('active');
+};
+
 // Fases de playoff y sus partidos con equipos editables
 const PLAYOFF_PHASES = [
   {id:'r32', label:'16avos de final'},
