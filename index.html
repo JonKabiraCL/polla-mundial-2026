@@ -660,7 +660,7 @@ window.doLogin=async()=>{
 window.doLogout=()=>signOut(auth);
 document.getElementById('li-pass').addEventListener('keydown',e=>{if(e.key==='Enter')window.doLogin();});
 
-onAuthStateChanged(auth,user=>{
+onAuthStateChanged(auth,async user=>{
   if(user){
     CU=user;isAdmin=user.uid===ADMIN_UID;
     const p=PARTS.find(x=>x.email===user.email);
