@@ -304,44 +304,23 @@
 
   <!-- MUNDIAL / ESTADÍSTICAS -->
   <div id="page-stats" class="page">
-
-    <!-- Tabs internas -->
     <div class="stats-tabs">
       <button class="stab active" onclick="switchStatTab('grupos',this)">📊 Grupos</button>
       <button class="stab" onclick="switchStatTab('partidos',this)">📅 Partidos</button>
       <button class="stab" onclick="switchStatTab('goleadores',this)">⚽ Goleadores</button>
     </div>
-
-    <!-- TAB: GRUPOS -->
     <div id="stab-grupos" class="stab-page active">
       <div class="slabel">Tabla de posiciones — todos los grupos</div>
-      <div style="background:#fff;border:0.5px solid var(--border);border-radius:12px;overflow:hidden;min-height:500px;">
-        <api-sports-widget data-type="standings" data-league="1" data-season="2026"></api-sports-widget>
-      </div>
+      <div id="stats-grupos-content"><div style="text-align:center;padding:30px;color:var(--text-3);font-size:13px;">Cargando…</div></div>
     </div>
-
-    <!-- TAB: PARTIDOS -->
     <div id="stab-partidos" class="stab-page">
-      <div class="slabel">Calendario y resultados</div>
-      <div style="background:#fff;border:0.5px solid var(--border);border-radius:12px;overflow:hidden;min-height:500px;">
-        <api-sports-widget data-type="league" data-league="1" data-season="2026" data-tab="results"></api-sports-widget>
-      </div>
-      <div class="slabel" style="margin-top:14px;">Detalle del partido</div>
-      <div id="wc-game-detail" style="background:#fff;border:0.5px solid var(--border);border-radius:12px;overflow:hidden;min-height:400px;">
-        <div style="display:flex;align-items:center;justify-content:center;height:200px;color:var(--text-3);font-size:13px;">
-          Haz clic en un partido para ver el detalle
-        </div>
-      </div>
+      <div class="slabel">Resultados y calendario</div>
+      <div id="stats-partidos-content"><div style="text-align:center;padding:30px;color:var(--text-3);font-size:13px;">Cargando…</div></div>
     </div>
-
-    <!-- TAB: GOLEADORES -->
     <div id="stab-goleadores" class="stab-page">
       <div class="slabel">Top goleadores del torneo</div>
-      <div style="background:#fff;border:0.5px solid var(--border);border-radius:12px;overflow:hidden;min-height:400px;">
-        <api-sports-widget data-type="topscorers" data-league="1" data-season="2026"></api-sports-widget>
-      </div>
+      <div id="stats-goleadores-content"><div style="text-align:center;padding:30px;color:var(--text-3);font-size:13px;">Cargando…</div></div>
     </div>
-
   </div>
 
   <!-- ADMIN CLASIFICADOS PLAYOFF -->
@@ -373,28 +352,6 @@
 </div>
 
 <div class="toast" id="toast"></div>
-
-<!-- Widget config global API-Sports — siempre en DOM -->
-<api-sports-widget
-  data-type="config"
-  data-key="86ea278fdbd11025effdc1bedd038ed4"
-  data-sport="football"
-  data-lang="es"
-  data-theme="white"
-  data-show-errors="false"
-  data-show-logos="true"
-  data-refresh="60"
-  data-standings="true"
-  data-target-standings="true"
-  data-target-game="#wc-game-detail"
-  data-target-player="modal"
-  data-target-team="modal"
-  data-league="1"
-  data-season="2026"
-></api-sports-widget>
-
-<!-- Script widgets API-Sports -->
-<script type="module" crossorigin src="https://widgets.api-sports.io/3.1.0/widgets.js"></script>
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
@@ -1339,7 +1296,201 @@ window.saveRealTorneo=async()=>{
 };
 
 // ── STATS PAGE ───────────────────────────────────────────────────
-function renderStatsPage(){ /* widgets se cargan estáticamente */ }
+const API_KEY = '86ea278fdbd11025effdc1bedd038ed4';
+const API_URL = 'https://v3.football.api-sports.io';
+let statsLoaded = {grupos:false, partidos:false, goleadores:false};
+
+async function apiGet(endpoint){
+  const res = await fetch(`${API_URL}${endpoint}`, {
+    headers: {'x-apisports-key': API_KEY}
+  });
+  return res.json();
+}
+
+function renderStatsPage(){
+  // Cargar grupos por defecto al abrir la pestaña
+  if(!statsLoaded.grupos) loadGrupos();
+}
+
+window.switchStatTab = (tab, btn) => {
+  document.querySelectorAll('.stab-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.stab').forEach(b => b.classList.remove('active'));
+  document.getElementById('stab-'+tab).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(tab==='grupos' && !statsLoaded.grupos) loadGrupos();
+  if(tab==='partidos' && !statsLoaded.partidos) loadPartidos();
+  if(tab==='goleadores' && !statsLoaded.goleadores) loadGoleadores();
+};
+
+async function loadGrupos(){
+  const el = document.getElementById('stats-grupos-content');
+  el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-3);font-size:13px;">Cargando grupos…</div>';
+  try {
+    const data = await apiGet('/standings?league=1&season=2026');
+    const groups = data.response?.[0]?.league?.standings || [];
+    if(!groups.length){ el.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-3);">Sin datos disponibles.</div>'; return; }
+
+    // Renderizar cada grupo
+    let html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;">';
+    groups.forEach(group => {
+      const gName = group[0]?.group || 'Grupo';
+      html += `<div class="card" style="padding:0;overflow:hidden;">
+        <div style="padding:8px 12px;background:var(--accent);color:#fff;font-size:12px;font-weight:600;">${gName}</div>
+        <table style="width:100%;border-collapse:collapse;font-size:12px;">
+          <thead><tr style="border-bottom:0.5px solid var(--border);">
+            <th style="text-align:left;padding:5px 8px;font-size:10px;color:var(--text-3);font-weight:600;">Equipo</th>
+            <th style="text-align:center;padding:5px 4px;font-size:10px;color:var(--text-3);font-weight:600;">PJ</th>
+            <th style="text-align:center;padding:5px 4px;font-size:10px;color:var(--text-3);font-weight:600;">PG</th>
+            <th style="text-align:center;padding:5px 4px;font-size:10px;color:var(--text-3);font-weight:600;">PE</th>
+            <th style="text-align:center;padding:5px 4px;font-size:10px;color:var(--text-3);font-weight:600;">PP</th>
+            <th style="text-align:center;padding:5px 4px;font-size:10px;color:var(--text-3);font-weight:600;">GD</th>
+            <th style="text-align:center;padding:5px 4px;font-size:10px;color:var(--text-3);font-weight:600;color:var(--accent);">Pts</th>
+          </tr></thead>
+          <tbody>
+            ${group.map((t,i) => {
+              const qualified = i < 2;
+              const third = i === 2;
+              const bg = qualified ? 'background:#f0f9f0;' : third ? 'background:#fff8e8;' : '';
+              const flag = FL[t.team.name] || '';
+              return `<tr style="border-bottom:0.5px solid var(--border-light);${bg}">
+                <td style="padding:6px 8px;">
+                  <div style="display:flex;align-items:center;gap:5px;">
+                    <span style="font-size:11px;font-weight:600;color:var(--text-3);width:14px;">${t.rank}</span>
+                    <span style="font-size:14px;">${flag}</span>
+                    <span style="font-size:12px;font-weight:${qualified?'600':'400'};">${t.team.name}</span>
+                  </div>
+                </td>
+                <td style="text-align:center;padding:6px 4px;">${t.all.played}</td>
+                <td style="text-align:center;padding:6px 4px;">${t.all.win}</td>
+                <td style="text-align:center;padding:6px 4px;">${t.all.draw}</td>
+                <td style="text-align:center;padding:6px 4px;">${t.all.lose}</td>
+                <td style="text-align:center;padding:6px 4px;">${t.goalsDiff>0?'+':''}${t.goalsDiff}</td>
+                <td style="text-align:center;padding:6px 4px;font-weight:700;color:var(--accent);">${t.points}</td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>`;
+    });
+    html += '</div>';
+    html += '<div style="margin-top:8px;font-size:11px;color:var(--text-3);padding:4px 0;"><span style="display:inline-block;width:10px;height:10px;background:#f0f9f0;border:0.5px solid #c0dd97;border-radius:2px;margin-right:4px;"></span>Clasificado directo &nbsp;&nbsp; <span style="display:inline-block;width:10px;height:10px;background:#fff8e8;border:0.5px solid #fac775;border-radius:2px;margin-right:4px;"></span>Posible mejor 3ro</div>';
+    el.innerHTML = html;
+    statsLoaded.grupos = true;
+  } catch(e) {
+    el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--red);">Error al cargar datos. Intenta de nuevo.</div>';
+    console.error(e);
+  }
+}
+
+async function loadPartidos(){
+  const el = document.getElementById('stats-partidos-content');
+  el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-3);font-size:13px;">Cargando partidos…</div>';
+  try {
+    // Traer partidos del día actual y anteriores recientes
+    const today = new Date().toISOString().split('T')[0];
+    const data = await apiGet(`/fixtures?league=1&season=2026&from=2026-06-11&to=${today}`);
+    const fixtures = data.response || [];
+    if(!fixtures.length){ el.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-3);">Sin partidos disponibles.</div>'; return; }
+
+    // Agrupar por fecha
+    const byDate = {};
+    fixtures.forEach(f => {
+      const d = f.fixture.date.split('T')[0];
+      if(!byDate[d]) byDate[d] = [];
+      byDate[d].push(f);
+    });
+
+    let html = '';
+    Object.keys(byDate).sort().reverse().forEach(date => {
+      const dateObj = new Date(date+'T12:00:00');
+      const dateStr = dateObj.toLocaleDateString('es-CL',{weekday:'short',day:'numeric',month:'short'});
+      html += `<div class="slabel">${dateStr}</div>`;
+      html += '<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px;">';
+      byDate[date].forEach(f => {
+        const home = f.teams.home;
+        const away = f.teams.away;
+        const score = f.goals;
+        const status = f.fixture.status.short;
+        const finished = ['FT','AET','PEN'].includes(status);
+        const live = ['1H','HT','2H','ET','P'].includes(status);
+        const fh = FL[home.name]||'';
+        const fa = FL[away.name]||'';
+        html += `<div style="background:#fff;border:0.5px solid var(--border);border-radius:8px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;">
+          <div style="flex:1;display:flex;align-items:center;gap:6px;font-size:13px;">
+            <span style="font-size:15px;">${fh}</span>
+            <span style="font-weight:${finished&&score.home>score.away?'600':'400'};">${home.name}</span>
+          </div>
+          <div style="text-align:center;min-width:70px;">
+            ${finished||live
+              ? `<span style="font-size:15px;font-weight:700;color:var(--accent);">${score.home??'–'} – ${score.away??'–'}</span>
+                 ${live?`<div style="font-size:10px;color:#e24b4a;font-weight:600;">${status}</div>`:''}
+                 ${finished?`<div style="font-size:10px;color:var(--text-3);">${status==='PEN'?'Pen.':status==='AET'?'Pról.':'FIN'}</div>`:''}`
+              : `<span style="font-size:11px;color:var(--text-3);">${f.fixture.date.split('T')[1].slice(0,5)}</span>`
+            }
+          </div>
+          <div style="flex:1;display:flex;align-items:center;justify-content:flex-end;gap:6px;font-size:13px;">
+            <span style="font-weight:${finished&&score.away>score.home?'600':'400'};">${away.name}</span>
+            <span style="font-size:15px;">${fa}</span>
+          </div>
+        </div>`;
+      });
+      html += '</div>';
+    });
+    el.innerHTML = html;
+    statsLoaded.partidos = true;
+  } catch(e) {
+    el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--red);">Error al cargar datos.</div>';
+    console.error(e);
+  }
+}
+
+async function loadGoleadores(){
+  const el = document.getElementById('stats-goleadores-content');
+  el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-3);font-size:13px;">Cargando goleadores…</div>';
+  try {
+    const data = await apiGet('/players/topscorers?league=1&season=2026');
+    const players = data.response || [];
+    if(!players.length){ el.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-3);">Sin datos de goleadores aún.</div>'; return; }
+
+    let html = '<div class="card" style="padding:0;overflow:hidden;"><table style="width:100%;border-collapse:collapse;font-size:13px;">';
+    html += `<thead><tr style="border-bottom:0.5px solid var(--border);">
+      <th style="text-align:center;padding:7px 10px;font-size:11px;color:var(--text-3);font-weight:600;width:36px;">#</th>
+      <th style="text-align:left;padding:7px 10px;font-size:11px;color:var(--text-3);font-weight:600;">Jugador</th>
+      <th style="text-align:left;padding:7px 10px;font-size:11px;color:var(--text-3);font-weight:600;">Selección</th>
+      <th style="text-align:center;padding:7px 10px;font-size:11px;color:var(--text-3);font-weight:600;">PJ</th>
+      <th style="text-align:center;padding:7px 10px;font-size:11px;color:var(--accent);font-weight:600;">⚽</th>
+      <th style="text-align:center;padding:7px 10px;font-size:11px;color:var(--text-3);font-weight:600;">Asist.</th>
+    </tr></thead><tbody>`;
+
+    players.slice(0,15).forEach((p,i) => {
+      const player = p.player;
+      const stats = p.statistics[0];
+      const flag = FL[stats.team.name]||'';
+      html += `<tr style="border-bottom:0.5px solid var(--border-light);">
+        <td style="text-align:center;padding:8px 10px;font-weight:600;color:var(--text-3);">${i+1}</td>
+        <td style="padding:8px 10px;">
+          <div style="font-weight:500;">${player.name}</div>
+          <div style="font-size:11px;color:var(--text-3);">${player.nationality}</div>
+        </td>
+        <td style="padding:8px 10px;">
+          <div style="display:flex;align-items:center;gap:5px;">
+            <span style="font-size:15px;">${flag}</span>
+            <span style="font-size:12px;">${stats.team.name}</span>
+          </div>
+        </td>
+        <td style="text-align:center;padding:8px 10px;color:var(--text-2);">${stats.games.appearences||0}</td>
+        <td style="text-align:center;padding:8px 10px;font-weight:700;color:var(--accent);font-size:15px;">${stats.goals.total||0}</td>
+        <td style="text-align:center;padding:8px 10px;color:var(--text-2);">${stats.goals.assists||0}</td>
+      </tr>`;
+    });
+    html += '</tbody></table></div>';
+    el.innerHTML = html;
+    statsLoaded.goleadores = true;
+  } catch(e) {
+    el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--red);">Error al cargar datos.</div>';
+    console.error(e);
+  }
+}
 
 window.switchStatTab = (tab, btn) => {
   document.querySelectorAll('.stab-page').forEach(p => p.classList.remove('active'));
