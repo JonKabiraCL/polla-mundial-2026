@@ -305,7 +305,7 @@
   <!-- MUNDIAL EN VIVO -->
   <div id="page-stats" class="page">
     <div class="stats-tabs">
-      <button class="stab active" onclick="switchStatTab('bracket',this)">🏆 Bracket</button>
+      <button class="stab active" onclick="switchStatTab('bracket',this)">🏆 Eliminación directa</button>
       <button class="stab" onclick="switchStatTab('grupos',this)">📊 Grupos</button>
       <button class="stab" onclick="switchStatTab('goleadores',this)">⚽ Goleadores</button>
     </div>
@@ -1466,10 +1466,10 @@ function renderBracket(){
   const champFlag = FL[champ]||'';
   let centerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 12px;flex-shrink:0;gap:8px;">
     <img src="https://football-logos.cc/img/tournaments/t_1.png" alt="Copa Mundial FIFA 2026"
-      style="width:72px;height:auto;object-fit:contain;"
+      style="width:80px;height:auto;object-fit:contain;filter:drop-shadow(0 2px 8px rgba(186,117,23,0.3));"
       onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
     <div style="display:none;flex-direction:column;align-items:center;gap:4px;">
-      <div style="font-size:36px;">🏆</div>
+      <div style="font-size:40px;">🏆</div>
     </div>
     <div style="text-align:center;">
       <div style="font-size:9px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Final · 19 jul</div>
@@ -1515,18 +1515,88 @@ const GROUP_TEAMS = {
   L:['Inglaterra','Croacia','Ghana','Panamá']
 };
 
-let gruposData = {};
+let gruposData = {
+  A:[
+    {t:'México',       pj:3,pg:3,pe:0,pp:0,gf:6, gc:0, pts:9},
+    {t:'Sudáfrica',    pj:3,pg:1,pe:1,pp:1,gf:2, gc:3, pts:4},
+    {t:'Corea del Sur',pj:3,pg:1,pe:0,pp:2,gf:2, gc:3, pts:3},
+    {t:'Rep. Checa',   pj:3,pg:0,pe:1,pp:2,gf:2, gc:6, pts:1},
+  ],
+  B:[
+    {t:'Suiza',          pj:3,pg:2,pe:1,pp:0,gf:7, gc:3,  pts:7},
+    {t:'Canadá',         pj:3,pg:1,pe:1,pp:1,gf:8, gc:3,  pts:4},
+    {t:'Bosnia y Herz.', pj:3,pg:1,pe:1,pp:1,gf:5, gc:6,  pts:4},
+    {t:'Catar',          pj:3,pg:0,pe:1,pp:2,gf:2, gc:10, pts:1},
+  ],
+  C:[
+    {t:'Brasil',   pj:3,pg:2,pe:1,pp:0,gf:7,gc:1,pts:7},
+    {t:'Marruecos',pj:3,pg:2,pe:1,pp:0,gf:6,gc:3,pts:7},
+    {t:'Escocia',  pj:3,pg:1,pe:0,pp:2,gf:1,gc:4,pts:3},
+    {t:'Haití',    pj:3,pg:0,pe:0,pp:3,gf:2,gc:8,pts:0},
+  ],
+  D:[
+    {t:'Estados Unidos',pj:2,pg:2,pe:0,pp:0,gf:6,gc:1,pts:6},
+    {t:'Australia',     pj:2,pg:1,pe:0,pp:1,gf:2,gc:2,pts:3},
+    {t:'Paraguay',      pj:2,pg:1,pe:0,pp:1,gf:2,gc:4,pts:3},
+    {t:'Turquía',       pj:2,pg:0,pe:0,pp:2,gf:0,gc:3,pts:0},
+  ],
+  E:[
+    {t:'Alemania',       pj:3,pg:2,pe:0,pp:1,gf:10,gc:4,pts:6},
+    {t:'Costa de Marfil',pj:3,pg:2,pe:0,pp:1,gf:4, gc:2,pts:6},
+    {t:'Ecuador',        pj:3,pg:1,pe:1,pp:1,gf:2, gc:2,pts:4},
+    {t:'Curazao',        pj:3,pg:0,pe:1,pp:2,gf:1, gc:9,pts:1},
+  ],
+  F:[
+    {t:'Países Bajos',pj:2,pg:1,pe:1,pp:0,gf:7,gc:3,pts:4},
+    {t:'Japón',       pj:2,pg:1,pe:1,pp:0,gf:6,gc:2,pts:4},
+    {t:'Suecia',      pj:2,pg:1,pe:0,pp:1,gf:6,gc:6,pts:3},
+    {t:'Túnez',       pj:2,pg:0,pe:0,pp:2,gf:1,gc:9,pts:0},
+  ],
+  G:[
+    {t:'Egipto',       pj:2,pg:1,pe:1,pp:0,gf:4,gc:2,pts:4},
+    {t:'Irán',         pj:2,pg:0,pe:2,pp:0,gf:2,gc:2,pts:2},
+    {t:'Bélgica',      pj:2,pg:0,pe:2,pp:0,gf:1,gc:1,pts:2},
+    {t:'Nueva Zelanda',pj:2,pg:0,pe:1,pp:1,gf:3,gc:5,pts:1},
+  ],
+  H:[
+    {t:'España',       pj:2,pg:1,pe:1,pp:0,gf:4,gc:0,pts:4},
+    {t:'Uruguay',      pj:2,pg:0,pe:2,pp:0,gf:3,gc:3,pts:2},
+    {t:'Cabo Verde',   pj:2,pg:0,pe:2,pp:0,gf:2,gc:2,pts:2},
+    {t:'Arabia Saudita',pj:2,pg:0,pe:1,pp:1,gf:1,gc:5,pts:1},
+  ],
+  I:[
+    {t:'Francia', pj:2,pg:2,pe:0,pp:0,gf:6,gc:1,pts:6},
+    {t:'Noruega', pj:2,pg:2,pe:0,pp:0,gf:7,gc:3,pts:6},
+    {t:'Senegal', pj:2,pg:0,pe:0,pp:2,gf:3,gc:6,pts:0},
+    {t:'Irak',    pj:2,pg:0,pe:0,pp:2,gf:1,gc:7,pts:0},
+  ],
+  J:[
+    {t:'Argentina',pj:2,pg:2,pe:0,pp:0,gf:5,gc:0,pts:6},
+    {t:'Austria',  pj:2,pg:1,pe:0,pp:1,gf:3,gc:3,pts:3},
+    {t:'Argelia',  pj:2,pg:1,pe:0,pp:1,gf:2,gc:4,pts:3},
+    {t:'Jordania', pj:2,pg:0,pe:0,pp:2,gf:2,gc:5,pts:0},
+  ],
+  K:[
+    {t:'Colombia',   pj:2,pg:2,pe:0,pp:0,gf:4,gc:1,pts:6},
+    {t:'Portugal',   pj:2,pg:1,pe:1,pp:0,gf:6,gc:1,pts:4},
+    {t:'RD Congo',   pj:2,pg:0,pe:1,pp:1,gf:1,gc:2,pts:1},
+    {t:'Uzbekistán', pj:2,pg:0,pe:0,pp:2,gf:1,gc:8,pts:0},
+  ],
+  L:[
+    {t:'Inglaterra',pj:2,pg:1,pe:1,pp:0,gf:4,gc:2,pts:4},
+    {t:'Ghana',     pj:2,pg:1,pe:1,pp:0,gf:1,gc:0,pts:4},
+    {t:'Croacia',   pj:2,pg:1,pe:0,pp:1,gf:3,gc:4,pts:3},
+    {t:'Panamá',    pj:2,pg:0,pe:0,pp:2,gf:0,gc:2,pts:0},
+  ],
+};
 
 async function loadGrupos(){
   try {
     const snap = await getDoc(doc(db,'config','gruposData'));
-    if(snap.exists()) gruposData = snap.data();
-    else {
-      // Inicializar con equipos en 0
-      GROUP_NAMES.forEach(g => {
-        gruposData[g] = GROUP_TEAMS[g].map(t => ({t,pj:0,pg:0,pe:0,pp:0,gf:0,gc:0,pts:0}));
-      });
+    if(snap.exists() && Object.keys(snap.data()).length > 0){
+      gruposData = snap.data();
     }
+    // Si no hay datos en Firebase, usa los precargados en gruposData
   } catch(e){ console.error(e); }
   renderGrupos();
 }
