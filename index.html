@@ -1358,20 +1358,37 @@ window.switchStatTab = (tab, btn) => {
 const BRACKET_ROUNDS_L = ['16avos','Octavos','Cuartos','Semis'];
 const BRACKET_ROUNDS_R = ['16avos','Octavos','Cuartos','Semis'];
 
-// Partidos por ronda (índice 0=16avos, 1=octavos, 2=cuartos, 3=semis)
-// Mitad izquierda: partidos 1-8 de 16avos, 1-4 octavos, 1-2 cuartos, semi 1
-// Mitad derecha: partidos 9-16 de 16avos, 5-8 octavos, 3-4 cuartos, semi 2
+// Cruces 16avos confirmados al 26 jun 2026
+// Mitad izquierda: P1-P8 | Mitad derecha: P9-P16
 const DEFAULT_BRACKET = {
-  l_r32: Array.from({length:8},(_,i)=>({h:`P${i*2+1}`,a:`P${i*2+2}`,s:''})),
-  r_r32: Array.from({length:8},(_,i)=>({h:`P${i*2+17}`,a:`P${i*2+18}`,s:''})),
-  l_r16: Array.from({length:4},(_,i)=>({h:`Gan. L16-${i*2+1}`,a:`Gan. L16-${i*2+2}`,s:''})),
-  r_r16: Array.from({length:4},(_,i)=>({h:`Gan. R16-${i*2+1}`,a:`Gan. R16-${i*2+2}`,s:''})),
-  l_qf:  Array.from({length:2},(_,i)=>({h:`Gan. L8-${i*2+1}`,a:`Gan. L8-${i*2+2}`,s:''})),
-  r_qf:  Array.from({length:2},(_,i)=>({h:`Gan. R8-${i*2+1}`,a:`Gan. R8-${i*2+2}`,s:''})),
-  l_sf:  [{h:'Gan. LQ1',a:'Gan. LQ2',s:''}],
-  r_sf:  [{h:'Gan. RQ1',a:'Gan. RQ2',s:''}],
+  l_r32: [
+    {h:'Sudáfrica',    a:'Canadá',       s:''},  // Dom 28 jun — CONFIRMADO
+    {h:'Brasil',       a:'2° Grupo F',   s:''},  // Lun 29 jun — Brasil confirmado
+    {h:'1° Grupo F',   a:'Marruecos',    s:''},  // Lun 29 jun — Marruecos confirmado
+    {h:'Costa de Marfil', a:'Noruega',   s:''},  // Lun 29 jun — por confirmar
+    {h:'México',       a:'T3 (C/E/F/H/I)',s:''},  // Mar 30 jun — México confirmado
+    {h:'1° Grupo E',   a:'T3 (A/B/C/D/F)',s:''},  // Lun 29 jun — Alemania probable
+    {h:'Estados Unidos',a:'Bosnia y Herz.',s:''},  // Mié 01 jul — EE.UU. confirmado
+    {h:'Francia',      a:'2° Grupo J',   s:''},  // Mié 01 jul — Francia confirmada
+  ],
+  r_r32: [
+    {h:'Suiza',        a:'Bélgica',      s:''},  // Dom 28 jun — por confirmar
+    {h:'Portugal',     a:'Ghana',        s:''},  // Mar 30 jun — por confirmar
+    {h:'Egipto',       a:'Cabo Verde',   s:''},  // Jue 02 jul — por confirmar
+    {h:'Colombia',     a:'Croacia',      s:''},  // Vie 03 jul — Colombia confirmada
+    {h:'Inglaterra',   a:'Argelia',      s:''},  // Vie 03 jul — por confirmar
+    {h:'España',       a:'Austria',      s:''},  // Vie 03 jul — por confirmar
+    {h:'Argentina',    a:'2° Grupo H',   s:''},  // Vie 03 jul — Argentina confirmada
+    {h:'Australia',    a:'Irán',         s:''},  // Vie 03 jul — por confirmar
+  ],
+  l_r16: Array.from({length:4},(_,i)=>({h:`Gan. 16avos ${i*2+1}`,a:`Gan. 16avos ${i*2+2}`,s:''})),
+  r_r16: Array.from({length:4},(_,i)=>({h:`Gan. 16avos ${i*2+9}`,a:`Gan. 16avos ${i*2+10}`,s:''})),
+  l_qf:  Array.from({length:2},(_,i)=>({h:`Gan. Oct. ${i*2+1}`,a:`Gan. Oct. ${i*2+2}`,s:''})),
+  r_qf:  Array.from({length:2},(_,i)=>({h:`Gan. Oct. ${i*2+5}`,a:`Gan. Oct. ${i*2+6}`,s:''})),
+  l_sf:  [{h:'Gan. Ctos. 1',a:'Gan. Ctos. 2',s:''}],
+  r_sf:  [{h:'Gan. Ctos. 3',a:'Gan. Ctos. 4',s:''}],
   third: {h:'Perd. Semi 1',a:'Perd. Semi 2',s:''},
-  final: {h:'Gan. Semi 1',a:'Gan. Semi 2',s:''},
+  final: {h:'Gan. Semi 1', a:'Gan. Semi 2', s:''},
   champion: ''
 };
 
@@ -1465,11 +1482,14 @@ function renderBracket(){
   const champ = b.champion || '';
   const champFlag = FL[champ]||'';
   let centerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 12px;flex-shrink:0;gap:8px;">
-    <img src="https://football-logos.cc/img/tournaments/t_1.png" alt="Copa Mundial FIFA 2026"
-      style="width:80px;height:auto;object-fit:contain;filter:drop-shadow(0 2px 8px rgba(186,117,23,0.3));"
+    <img src="https://digitalhub.fifa.com/transform/a45bc9a6-a327-4578-a854-74b9e6c3c30d/2026-FIFA-World-Cup-Official-Emblem"
+      alt="Copa Mundial FIFA 2026"
+      style="width:80px;height:auto;object-fit:contain;filter:drop-shadow(0 2px 8px rgba(186,117,23,0.4));"
       onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-    <div style="display:none;flex-direction:column;align-items:center;gap:4px;">
-      <div style="font-size:40px;">🏆</div>
+    <div style="display:none;flex-direction:column;align-items:center;gap:2px;">
+      <div style="font-size:42px;line-height:1;">🏆</div>
+      <div style="font-size:9px;color:#fff;opacity:0.7;font-weight:600;letter-spacing:0.5px;">FIFA WORLD CUP</div>
+      <div style="font-size:11px;color:#ba7517;font-weight:700;">2026</div>
     </div>
     <div style="text-align:center;">
       <div style="font-size:9px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Final · 19 jul</div>
@@ -1535,22 +1555,22 @@ let gruposData = {
     {t:'Haití',    pj:3,pg:0,pe:0,pp:3,gf:2,gc:8,pts:0},
   ],
   D:[
-    {t:'Estados Unidos',pj:2,pg:2,pe:0,pp:0,gf:6,gc:1,pts:6},
-    {t:'Australia',     pj:2,pg:1,pe:0,pp:1,gf:2,gc:2,pts:3},
-    {t:'Paraguay',      pj:2,pg:1,pe:0,pp:1,gf:2,gc:4,pts:3},
-    {t:'Turquía',       pj:2,pg:0,pe:0,pp:2,gf:0,gc:3,pts:0},
+    {t:'Estados Unidos',pj:3,pg:2,pe:0,pp:1,gf:8, gc:4, pts:6},
+    {t:'Australia',     pj:3,pg:2,pe:0,pp:1,gf:4, gc:3, pts:6},
+    {t:'Paraguay',      pj:3,pg:1,pe:0,pp:2,gf:2, gc:5, pts:3},
+    {t:'Turquía',       pj:3,pg:1,pe:0,pp:2,gf:2, gc:4, pts:3},
   ],
   E:[
-    {t:'Alemania',       pj:3,pg:2,pe:0,pp:1,gf:10,gc:4,pts:6},
-    {t:'Costa de Marfil',pj:3,pg:2,pe:0,pp:1,gf:4, gc:2,pts:6},
-    {t:'Ecuador',        pj:3,pg:1,pe:1,pp:1,gf:2, gc:2,pts:4},
-    {t:'Curazao',        pj:3,pg:0,pe:1,pp:2,gf:1, gc:9,pts:1},
+    {t:'Ecuador',        pj:3,pg:2,pe:1,pp:0,gf:4, gc:3, pts:7},
+    {t:'Costa de Marfil',pj:3,pg:2,pe:0,pp:1,gf:6, gc:2, pts:6},
+    {t:'Alemania',       pj:3,pg:2,pe:0,pp:1,gf:11,gc:5, pts:6},
+    {t:'Curazao',        pj:3,pg:0,pe:1,pp:2,gf:1, gc:11,pts:1},
   ],
   F:[
-    {t:'Países Bajos',pj:2,pg:1,pe:1,pp:0,gf:7,gc:3,pts:4},
-    {t:'Japón',       pj:2,pg:1,pe:1,pp:0,gf:6,gc:2,pts:4},
-    {t:'Suecia',      pj:2,pg:1,pe:0,pp:1,gf:6,gc:6,pts:3},
-    {t:'Túnez',       pj:2,pg:0,pe:0,pp:2,gf:1,gc:9,pts:0},
+    {t:'Países Bajos',pj:3,pg:2,pe:1,pp:0,gf:10,gc:4, pts:7},
+    {t:'Japón',       pj:3,pg:1,pe:2,pp:0,gf:7, gc:3, pts:5},
+    {t:'Suecia',      pj:3,pg:1,pe:1,pp:1,gf:7, gc:7, pts:4},
+    {t:'Túnez',       pj:3,pg:0,pe:0,pp:3,gf:2, gc:12,pts:0},
   ],
   G:[
     {t:'Egipto',       pj:2,pg:1,pe:1,pp:0,gf:4,gc:2,pts:4},
