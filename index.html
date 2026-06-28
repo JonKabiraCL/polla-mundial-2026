@@ -1391,7 +1391,7 @@ const DEFAULT_BRACKET = {
   champion: ''
 };
 
- = JSON.parse(JSON.stringify(DEFAULT_BRACKET));
+let bracketData = JSON.parse(JSON.stringify(DEFAULT_BRACKET));
 
 async function loadBracket(){
   try {
