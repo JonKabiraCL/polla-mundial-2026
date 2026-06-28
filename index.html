@@ -665,22 +665,22 @@ const CAL=[
     {h:'Jordania',a:'Argentina',d:'Sáb 27 jun',t:'22:00',g:'J'},
   ]},
   {id:'r32',name:'16avos de final',phase:'r32',matches:[
-    {h:'2° Grupo A',a:'2° Grupo B',d:'Dom 28 jun',t:'Por confirmar'},
-    {h:'1° Grupo C',a:'2° Grupo D',d:'Dom 28 jun',t:'Por confirmar'},
-    {h:'1° Grupo A',a:'T3 (C/E/F/H/I)',d:'Lun 29 jun',t:'Por confirmar'},
-    {h:'1° Grupo F',a:'2° Grupo E',d:'Lun 29 jun',t:'Por confirmar'},
-    {h:'1° Grupo B',a:'T3 (A/B/C/D/F)',d:'Mar 30 jun',t:'Por confirmar'},
-    {h:'1° Grupo E',a:'T3 (A/B/C/D/F)',d:'Mar 30 jun',t:'Por confirmar'},
-    {h:'1° Grupo D',a:'T3 (B/E/F/I/J)',d:'Mié 01 jul',t:'Por confirmar'},
-    {h:'2° Grupo C',a:'2° Grupo F',d:'Mié 01 jul',t:'Por confirmar'},
-    {h:'1° Grupo I',a:'T3 (C/D/F/G/H)',d:'Jue 02 jul',t:'Por confirmar'},
-    {h:'2° Grupo H',a:'2° Grupo I',d:'Jue 02 jul',t:'Por confirmar'},
-    {h:'1° Grupo G',a:'T3 (A/E/H/I/J)',d:'Vie 03 jul',t:'Por confirmar'},
-    {h:'2° Grupo K',a:'2° Grupo L',d:'Vie 03 jul',t:'Por confirmar'},
-    {h:'1° Grupo J',a:'T3 (E/H/I/J/K)',d:'Vie 03 jul',t:'Por confirmar'},
-    {h:'1° Grupo K',a:'T3 (A/B/C/D/K)',d:'Vie 03 jul',t:'Por confirmar'},
-    {h:'1° Grupo H',a:'2° Grupo G',d:'Vie 03 jul',t:'Por confirmar'},
-    {h:'1° Grupo L',a:'T3 (E/H/I/J/K)',d:'Vie 03 jul',t:'Por confirmar'},
+    {h:'Alemania',       a:'Paraguay',      d:'Lun 29 jun',t:'17:30'},
+    {h:'Francia',        a:'Suecia',        d:'Lun 29 jun',t:'22:00'},
+    {h:'Sudáfrica',      a:'Canadá',        d:'Dom 28 jun',t:'16:00'},
+    {h:'Países Bajos',   a:'Marruecos',     d:'Lun 29 jun',t:'22:00'},
+    {h:'Portugal',       a:'Croacia',       d:'Mar 30 jun',t:'Por confirmar'},
+    {h:'España',         a:'Austria',       d:'Mié 01 jul',t:'Por confirmar'},
+    {h:'Estados Unidos', a:'Bosnia y Herz.',d:'Mié 01 jul',t:'21:00'},
+    {h:'Bélgica',        a:'Senegal',       d:'Mié 01 jul',t:'Por confirmar'},
+    {h:'Brasil',         a:'Japón',         d:'Lun 29 jun',t:'14:00'},
+    {h:'Costa de Marfil',a:'Noruega',       d:'Lun 29 jun',t:'17:30'},
+    {h:'México',         a:'Ecuador',       d:'Mar 30 jun',t:'22:00'},
+    {h:'Inglaterra',     a:'RD Congo',      d:'Jue 02 jul',t:'Por confirmar'},
+    {h:'Argentina',      a:'Cabo Verde',    d:'Vie 03 jul',t:'19:00'},
+    {h:'Australia',      a:'Egipto',        d:'Vie 03 jul',t:'Por confirmar'},
+    {h:'Suiza',          a:'Argelia',       d:'Vie 03 jul',t:'Por confirmar'},
+    {h:'Colombia',       a:'Ghana',         d:'Vie 03 jul',t:'Por confirmar'},
   ]},
   {id:'r16',name:'Octavos de final',phase:'r16',matches:[
     {h:'Ganador R32 P1',a:'Ganador R32 P2',d:'Sáb 04 jul',t:'Por confirmar'},
@@ -1358,28 +1358,27 @@ window.switchStatTab = (tab, btn) => {
 const BRACKET_ROUNDS_L = ['16avos','Octavos','Cuartos','Semis'];
 const BRACKET_ROUNDS_R = ['16avos','Octavos','Cuartos','Semis'];
 
-// Cruces 16avos confirmados al 26 jun 2026
-// Mitad izquierda: P1-P8 | Mitad derecha: P9-P16
+// Cruces 16avos CONFIRMADOS — cuadro oficial FIFA World Cup 2026
 const DEFAULT_BRACKET = {
   l_r32: [
-    {h:'Sudáfrica',    a:'Canadá',       s:''},  // Dom 28 jun — CONFIRMADO
-    {h:'Brasil',       a:'2° Grupo F',   s:''},  // Lun 29 jun — Brasil confirmado
-    {h:'1° Grupo F',   a:'Marruecos',    s:''},  // Lun 29 jun — Marruecos confirmado
-    {h:'Costa de Marfil', a:'Noruega',   s:''},  // Lun 29 jun — por confirmar
-    {h:'México',       a:'T3 (C/E/F/H/I)',s:''},  // Mar 30 jun — México confirmado
-    {h:'1° Grupo E',   a:'T3 (A/B/C/D/F)',s:''},  // Lun 29 jun — Alemania probable
-    {h:'Estados Unidos',a:'Bosnia y Herz.',s:''},  // Mié 01 jul — EE.UU. confirmado
-    {h:'Francia',      a:'2° Grupo J',   s:''},  // Mié 01 jul — Francia confirmada
+    {h:'Alemania',       a:'Paraguay',      s:''},
+    {h:'Francia',        a:'Suecia',        s:''},
+    {h:'Sudáfrica',      a:'Canadá',        s:''},
+    {h:'Países Bajos',   a:'Marruecos',     s:''},
+    {h:'Portugal',       a:'Croacia',       s:''},
+    {h:'España',         a:'Austria',       s:''},
+    {h:'Estados Unidos', a:'Bosnia y Herz.',s:''},
+    {h:'Bélgica',        a:'Senegal',       s:''},
   ],
   r_r32: [
-    {h:'Suiza',        a:'Bélgica',      s:''},  // Dom 28 jun — por confirmar
-    {h:'Portugal',     a:'Ghana',        s:''},  // Mar 30 jun — por confirmar
-    {h:'Egipto',       a:'Cabo Verde',   s:''},  // Jue 02 jul — por confirmar
-    {h:'Colombia',     a:'Croacia',      s:''},  // Vie 03 jul — Colombia confirmada
-    {h:'Inglaterra',   a:'Argelia',      s:''},  // Vie 03 jul — por confirmar
-    {h:'España',       a:'Austria',      s:''},  // Vie 03 jul — por confirmar
-    {h:'Argentina',    a:'2° Grupo H',   s:''},  // Vie 03 jul — Argentina confirmada
-    {h:'Australia',    a:'Irán',         s:''},  // Vie 03 jul — por confirmar
+    {h:'Brasil',         a:'Japón',         s:''},
+    {h:'Costa de Marfil',a:'Noruega',       s:''},
+    {h:'México',         a:'Ecuador',       s:''},
+    {h:'Inglaterra',     a:'RD Congo',      s:''},
+    {h:'Argentina',      a:'Cabo Verde',    s:''},
+    {h:'Australia',      a:'Egipto',        s:''},
+    {h:'Suiza',          a:'Argelia',       s:''},
+    {h:'Colombia',       a:'Ghana',         s:''},
   ],
   l_r16: Array.from({length:4},(_,i)=>({h:`Gan. 16avos ${i*2+1}`,a:`Gan. 16avos ${i*2+2}`,s:''})),
   r_r16: Array.from({length:4},(_,i)=>({h:`Gan. 16avos ${i*2+9}`,a:`Gan. 16avos ${i*2+10}`,s:''})),
@@ -1392,7 +1391,7 @@ const DEFAULT_BRACKET = {
   champion: ''
 };
 
-let bracketData = JSON.parse(JSON.stringify(DEFAULT_BRACKET));
+ = JSON.parse(JSON.stringify(DEFAULT_BRACKET));
 
 async function loadBracket(){
   try {
