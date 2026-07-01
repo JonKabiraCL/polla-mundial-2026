@@ -1235,8 +1235,81 @@ window.saveResults=async(jid)=>{
   });
   try{
     await setDoc(doc(db,'results',jid),data);
+
+    if(!ig && Object.keys(data).length>0){
+      // Cargar bracket actual de Firebase
+      const bSnap=await getDoc(doc(db,'config','bracketData'));
+      const bd=bSnap.exists()?JSON.parse(JSON.stringify({...DEFAULT_BRACKET,...bSnap.data()})):JSON.parse(JSON.stringify(DEFAULT_BRACKET));
+
+      // Mapa de avance: cada partido de 16avos alimenta a octavos, etc.
+      // Índices basados en DEFAULT_BRACKET: l_r32[0..7], r_r32[0..7]
+      // l_r32[i] → ganador va a l_r16[Math.floor(i/2)] como h(par) o a(impar)
+      // r_r32[i] → ganador va a r_r16[Math.floor(i/2)] como h(par) o a(impar)
+      // l_r16[i] → ganador va a l_qf[Math.floor(i/2)] como h(par) o a(impar)
+      // r_r16[i] → ganador va a r_qf[Math.floor(i/2)] como h(par) o a(impar)
+      // l_qf[0] → l_sf[0].h, l_qf[1] → l_sf[0].a
+      // r_qf[0] → r_sf[0].h, r_qf[1] → r_sf[0].a
+      // l_sf[0] → final.h, r_sf[0] → final.a
+
+      function advanceWinner(side, idx, winner){
+        if(side==='l_r32'){
+          const nextIdx=Math.floor(idx/2);
+          if(idx%2===0) bd.l_r16[nextIdx].h=winner;
+          else          bd.l_r16[nextIdx].a=winner;
+        } else if(side==='r_r32'){
+          const nextIdx=Math.floor(idx/2);
+          if(idx%2===0) bd.r_r16[nextIdx].h=winner;
+          else          bd.r_r16[nextIdx].a=winner;
+        } else if(side==='l_r16'){
+          const nextIdx=Math.floor(idx/2);
+          if(idx%2===0) bd.l_qf[nextIdx].h=winner;
+          else          bd.l_qf[nextIdx].a=winner;
+        } else if(side==='r_r16'){
+          const nextIdx=Math.floor(idx/2);
+          if(idx%2===0) bd.r_qf[nextIdx].h=winner;
+          else          bd.r_qf[nextIdx].a=winner;
+        } else if(side==='l_qf'){
+          if(idx===0) bd.l_sf[0].h=winner;
+          else        bd.l_sf[0].a=winner;
+        } else if(side==='r_qf'){
+          if(idx===0) bd.r_sf[0].h=winner;
+          else        bd.r_sf[0].a=winner;
+        } else if(side==='l_sf'){
+          bd.final.h=winner;
+        } else if(side==='r_sf'){
+          bd.final.a=winner;
+        }
+      }
+
+      // Detectar fase y lado de cada partido
+      const phaseKeys={r32:['l_r32','r_r32'],r16:['l_r16','r_r16'],qf:['l_qf','r_qf'],sf:['l_sf','r_sf']};
+      const sides=phaseKeys[j.phase]||[];
+
+      j.matches.forEach((m,mi)=>{
+        const r=data[mi+''];
+        if(!r||!r.c) return;
+        // Actualizar resultado en bracket
+        for(const side of sides){
+          const arr=bd[side]||[];
+          const idx=arr.findIndex(bm=>bm.h===m.h&&bm.a===m.a);
+          if(idx>=0){
+            arr[idx].s=`${r.h}-${r.a}`;
+            arr[idx].clasificado=r.c;
+            // Hacer avanzar al clasificado a la siguiente ronda
+            advanceWinner(side,idx,r.c);
+            break;
+          }
+        }
+      });
+
+      await setDoc(doc(db,'config','bracketData'),bd);
+      bracketData=bd;
+      renderBracket();
+    }
+
     toast('Resultados guardados ✓');
-    renderRanking();await renderResultsPage();
+    renderRanking();
+    await renderResultsPage();
   }catch(e){toast('Error al guardar');console.error(e);}
 };
 
