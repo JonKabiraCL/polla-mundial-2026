@@ -683,38 +683,98 @@ const CAL=[
     {h:'Argentina',      a:'Cabo Verde',    d:'Vie 03 jul',t:'18:00'},
   ]},
   {id:'r16',name:'Octavos de final',phase:'r16',matches:[
-    {h:'Ganador R32 P1',a:'Ganador R32 P2',d:'Sáb 04 jul',t:'Por confirmar'},
-    {h:'Ganador R32 P3',a:'Ganador R32 P4',d:'Sáb 04 jul',t:'Por confirmar'},
-    {h:'Ganador R32 P5',a:'Ganador R32 P6',d:'Dom 05 jul',t:'Por confirmar'},
-    {h:'Ganador R32 P7',a:'Ganador R32 P8',d:'Dom 05 jul',t:'Por confirmar'},
-    {h:'Ganador R32 P9',a:'Ganador R32 P10',d:'Lun 06 jul',t:'Por confirmar'},
-    {h:'Ganador R32 P11',a:'Ganador R32 P12',d:'Lun 06 jul',t:'Por confirmar'},
-    {h:'Ganador R32 P13',a:'Ganador R32 P14',d:'Mar 07 jul',t:'Por confirmar'},
-    {h:'Ganador R32 P15',a:'Ganador R32 P16',d:'Mar 07 jul',t:'Por confirmar'},
+    {h:'Canadá',         a:'Marruecos',     d:'Sáb 04 jul',t:'13:00'},
+    {h:'Paraguay',       a:'Francia',       d:'Sáb 04 jul',t:'17:00'},
+    {h:'Brasil',         a:'Noruega',       d:'Dom 05 jul',t:'16:00'},
+    {h:'México',         a:'Inglaterra',    d:'Dom 05 jul',t:'20:00'},
+    {h:'Portugal',       a:'España',        d:'Lun 06 jul',t:'15:00'},
+    {h:'Estados Unidos', a:'Bélgica',       d:'Lun 06 jul',t:'20:00'},
+    {h:'Argentina',      a:'Egipto',        d:'Mar 07 jul',t:'12:00'},
+    {h:'Suiza',          a:'Colombia',      d:'Mar 07 jul',t:'16:00'},
   ]},
   {id:'qf',name:'Cuartos de final',phase:'qf',matches:[
-    {h:'Ganador Oct. P1',a:'Ganador Oct. P2',d:'Jue 09 jul',t:'Por confirmar'},
-    {h:'Ganador Oct. P3',a:'Ganador Oct. P4',d:'Jue 09 jul',t:'Por confirmar'},
-    {h:'Ganador Oct. P5',a:'Ganador Oct. P6',d:'Vie 10 jul',t:'Por confirmar'},
-    {h:'Ganador Oct. P7',a:'Ganador Oct. P8',d:'Vie 10 jul',t:'Por confirmar'},
-    {h:'Ganador Oct. P9',a:'Ganador Oct. P10',d:'Sáb 11 jul',t:'Por confirmar'},
-    {h:'Ganador Oct. P11',a:'Ganador Oct. P12',d:'Sáb 11 jul',t:'Por confirmar'},
-    {h:'Ganador Oct. P13',a:'Ganador Oct. P14',d:'Dom 12 jul',t:'Por confirmar'},
-    {h:'Ganador Oct. P15',a:'Ganador Oct. P16',d:'Dom 12 jul',t:'Por confirmar'},
+    {h:'Gan. Oct. 1',a:'Gan. Oct. 2',d:'Jue 09 jul',t:'Por confirmar'},
+    {h:'Gan. Oct. 3',a:'Gan. Oct. 4',d:'Jue 09 jul',t:'Por confirmar'},
+    {h:'Gan. Oct. 5',a:'Gan. Oct. 6',d:'Vie 10 jul',t:'Por confirmar'},
+    {h:'Gan. Oct. 7',a:'Gan. Oct. 8',d:'Vie 10 jul',t:'Por confirmar'},
   ]},
   {id:'sf',name:'Semifinales',phase:'sf',matches:[
-    {h:'Ganador Ctos. P1',a:'Ganador Ctos. P2',d:'Mar 14 jul',t:'Por confirmar'},
-    {h:'Ganador Ctos. P3',a:'Ganador Ctos. P4',d:'Mié 15 jul',t:'Por confirmar'},
-    {h:'Ganador Ctos. P5',a:'Ganador Ctos. P6',d:'Jue 16 jul',t:'Por confirmar'},
-    {h:'Ganador Ctos. P7',a:'Ganador Ctos. P8',d:'Vie 17 jul',t:'Por confirmar'},
+    {h:'Gan. Ctos. 1',a:'Gan. Ctos. 2',d:'Mar 14 jul',t:'Por confirmar'},
+    {h:'Gan. Ctos. 3',a:'Gan. Ctos. 4',d:'Mié 15 jul',t:'Por confirmar'},
   ]},
   {id:'3rd',name:'Tercer lugar',phase:'3rd',matches:[
-    {h:'Perdedor Semi 1',a:'Perdedor Semi 2',d:'Sáb 18 jul',t:'Por confirmar'},
+    {h:'Perd. Semi 1',a:'Perd. Semi 2',d:'Sáb 18 jul',t:'Por confirmar'},
   ]},
   {id:'final',name:'Final · MetLife Stadium, Nueva Jersey',phase:'final',matches:[
-    {h:'Semifinalista 1',a:'Semifinalista 2',d:'Dom 19 jul',t:'17:00'},
+    {h:'Gan. Semi 1',a:'Gan. Semi 2',d:'Dom 19 jul',t:'17:00'},
   ]}
 ];
+
+// ── ACTUALIZAR CAL DINÁMICAMENTE DESDE RESULTADOS ────────────────
+// Lee los clasificados reales de cada fase y actualiza el calendario
+async function updateDynamicPhases(allRes){
+  // r16 → qf
+  const r16res = allRes['r16'] || {};
+  const r16matches = CAL.find(j=>j.id==='r16')?.matches || [];
+  const r16winners = r16matches.map((_,mi) => r16res[mi+'']?.c || null);
+
+  // Actualizar cuartos con ganadores de octavos
+  const qf = CAL.find(j=>j.id==='qf');
+  if(qf){
+    // Mitad izquierda: oct 0,1 → qf 0; oct 2,3 → qf 1
+    // Mitad derecha: oct 4,5 → qf 2; oct 6,7 → qf 3
+    if(r16winners[0]) qf.matches[0].h = r16winners[0];
+    if(r16winners[1]) qf.matches[0].a = r16winners[1];
+    if(r16winners[2]) qf.matches[1].h = r16winners[2];
+    if(r16winners[3]) qf.matches[1].a = r16winners[3];
+    if(r16winners[4]) qf.matches[2].h = r16winners[4];
+    if(r16winners[5]) qf.matches[2].a = r16winners[5];
+    if(r16winners[6]) qf.matches[3].h = r16winners[6];
+    if(r16winners[7]) qf.matches[3].a = r16winners[7];
+  }
+
+  // qf → sf
+  const qfres = allRes['qf'] || {};
+  const qfmatches = CAL.find(j=>j.id==='qf')?.matches || [];
+  const qfwinners = qfmatches.map((_,mi) => qfres[mi+'']?.c || null);
+  const qflosers  = qfmatches.map((_,mi) => {
+    const r = qfres[mi+''];
+    if(!r?.c) return null;
+    const m = qfmatches[mi];
+    return r.c === m.h ? m.a : m.h;
+  });
+
+  const sf = CAL.find(j=>j.id==='sf');
+  if(sf){
+    if(qfwinners[0]) sf.matches[0].h = qfwinners[0];
+    if(qfwinners[1]) sf.matches[0].a = qfwinners[1];
+    if(qfwinners[2]) sf.matches[1].h = qfwinners[2];
+    if(qfwinners[3]) sf.matches[1].a = qfwinners[3];
+  }
+
+  // sf → final + 3rd
+  const sfres = allRes['sf'] || {};
+  const sfmatches = CAL.find(j=>j.id==='sf')?.matches || [];
+  const sfwinners = sfmatches.map((_,mi) => sfres[mi+'']?.c || null);
+  const sflosers  = sfmatches.map((_,mi) => {
+    const r = sfres[mi+''];
+    if(!r?.c) return null;
+    const m = sfmatches[mi];
+    return r.c === m.h ? m.a : m.h;
+  });
+
+  const fin = CAL.find(j=>j.id==='final');
+  if(fin){
+    if(sfwinners[0]) fin.matches[0].h = sfwinners[0];
+    if(sfwinners[1]) fin.matches[0].a = sfwinners[1];
+  }
+
+  const third = CAL.find(j=>j.id==='3rd');
+  if(third){
+    if(sflosers[0]) third.matches[0].h = sflosers[0];
+    if(sflosers[1]) third.matches[0].a = sflosers[1];
+  }
+}
 
 // ── STATE ────────────────────────────────────────────────────────
 let CU=null,isAdmin=false,CUName='';
@@ -829,7 +889,9 @@ function calcPts(pk,r,phase){
 // ── LOADERS ──────────────────────────────────────────────────────
 async function loadAllResults(){
   const s=await getDocs(collection(db,'results'));
-  const o={};s.forEach(d=>{o[d.id]=d.data();});return o;
+  const o={};s.forEach(d=>{o[d.id]=d.data();});
+  await updateDynamicPhases(o);
+  return o;
 }
 async function loadAllPicks(){
   const s=await getDocs(collection(db,'picks'));
@@ -1434,27 +1496,37 @@ const BRACKET_ROUNDS_R = ['16avos','Octavos','Cuartos','Semis'];
 // Cruces 16avos CONFIRMADOS — cuadro oficial FIFA World Cup 2026
 const DEFAULT_BRACKET = {
   l_r32: [
-    {h:'Sudáfrica',      a:'Canadá',        s:''},
-    {h:'Países Bajos',   a:'Marruecos',     s:''},
-    {h:'Alemania',       a:'Paraguay',      s:''},
-    {h:'Francia',        a:'Suecia',        s:''},
-    {h:'Bélgica',        a:'Senegal',       s:''},
-    {h:'Estados Unidos', a:'Bosnia y Herz.',s:''},
-    {h:'España',         a:'Austria',       s:''},
-    {h:'Portugal',       a:'Croacia',       s:''},
+    {h:'Alemania',       a:'Paraguay',      s:'1-1', clasificado:'Paraguay'},
+    {h:'Francia',        a:'Suecia',        s:'3-0', clasificado:'Francia'},
+    {h:'Sudáfrica',      a:'Canadá',        s:'0-1', clasificado:'Canadá'},
+    {h:'Países Bajos',   a:'Marruecos',     s:'1-1', clasificado:'Marruecos'},
+    {h:'Portugal',       a:'Croacia',       s:'2-1', clasificado:'Portugal'},
+    {h:'España',         a:'Austria',       s:'3-0', clasificado:'España'},
+    {h:'Estados Unidos', a:'Bosnia y Herz.',s:'2-0', clasificado:'Estados Unidos'},
+    {h:'Bélgica',        a:'Senegal',       s:'3-2', clasificado:'Bélgica'},
   ],
   r_r32: [
-    {h:'Brasil',         a:'Japón',         s:''},
-    {h:'Costa de Marfil',a:'Noruega',       s:''},
-    {h:'México',         a:'Ecuador',       s:''},
-    {h:'Inglaterra',     a:'RD Congo',      s:''},
-    {h:'Suiza',          a:'Argelia',       s:''},
-    {h:'Colombia',       a:'Ghana',         s:''},
-    {h:'Australia',      a:'Egipto',        s:''},
-    {h:'Argentina',      a:'Cabo Verde',    s:''},
+    {h:'Brasil',         a:'Japón',         s:'2-1', clasificado:'Brasil'},
+    {h:'Costa de Marfil',a:'Noruega',       s:'1-2', clasificado:'Noruega'},
+    {h:'México',         a:'Ecuador',       s:'2-0', clasificado:'México'},
+    {h:'Inglaterra',     a:'RD Congo',      s:'2-1', clasificado:'Inglaterra'},
+    {h:'Argentina',      a:'Cabo Verde',    s:'3-2', clasificado:'Argentina'},
+    {h:'Australia',      a:'Egipto',        s:'1-1', clasificado:'Egipto'},
+    {h:'Suiza',          a:'Argelia',       s:'2-0', clasificado:'Suiza'},
+    {h:'Colombia',       a:'Ghana',         s:'1-0', clasificado:'Colombia'},
   ],
-  l_r16: Array.from({length:4},(_,i)=>({h:`Gan. 16avos ${i*2+1}`,a:`Gan. 16avos ${i*2+2}`,s:''})),
-  r_r16: Array.from({length:4},(_,i)=>({h:`Gan. 16avos ${i*2+9}`,a:`Gan. 16avos ${i*2+10}`,s:''})),
+  l_r16: [
+    {h:'Canadá',         a:'Marruecos',     s:''},
+    {h:'Paraguay',       a:'Francia',       s:''},
+    {h:'Portugal',       a:'España',        s:''},
+    {h:'Estados Unidos', a:'Bélgica',       s:''},
+  ],
+  r_r16: [
+    {h:'Brasil',         a:'Noruega',       s:''},
+    {h:'México',         a:'Inglaterra',    s:''},
+    {h:'Argentina',      a:'Egipto',        s:''},
+    {h:'Suiza',          a:'Colombia',      s:''},
+  ],
   l_qf:  Array.from({length:2},(_,i)=>({h:`Gan. Oct. ${i*2+1}`,a:`Gan. Oct. ${i*2+2}`,s:''})),
   r_qf:  Array.from({length:2},(_,i)=>({h:`Gan. Oct. ${i*2+5}`,a:`Gan. Oct. ${i*2+6}`,s:''})),
   l_sf:  [{h:'Gan. Ctos. 1',a:'Gan. Ctos. 2',s:''}],
