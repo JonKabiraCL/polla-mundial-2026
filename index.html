@@ -451,7 +451,7 @@ const DEADLINES={
   gj3d:      new Date('2026-06-24T14:59:00-04:00'),
   r32:       new Date('2026-06-28T14:59:00-04:00'),
   r16:       new Date('2026-07-04T12:59:00-04:00'),
-  qf:        new Date('2026-07-09T12:59:00-04:00'),
+  qf:        new Date('2026-07-09T15:59:00-04:00'),
   sf:        new Date('2026-07-14T12:59:00-04:00'),
   '3rd':     new Date('2026-07-18T12:59:00-04:00'),
   final:     new Date('2026-07-19T16:59:00-04:00'),
@@ -693,14 +693,14 @@ const CAL=[
     {h:'Suiza',          a:'Colombia',      d:'Mar 07 jul',t:'16:00'},
   ]},
   {id:'qf',name:'Cuartos de final',phase:'qf',matches:[
-    {h:'Francia',        a:'Marruecos',     d:'Jue 09 jul',t:'17:00'},
-    {h:'España',         a:'Bélgica',       d:'Vie 10 jul',t:'16:00'},
-    {h:'Noruega',        a:'Inglaterra',    d:'Sáb 11 jul',t:'18:00'},
+    {h:'Francia',        a:'Marruecos',     d:'Jue 09 jul',t:'16:00'},
+    {h:'España',         a:'Bélgica',       d:'Vie 10 jul',t:'15:00'},
+    {h:'Noruega',        a:'Inglaterra',    d:'Sáb 11 jul',t:'17:00'},
     {h:'Argentina',      a:'Suiza',         d:'Sáb 11 jul',t:'21:00'},
   ]},
   {id:'sf',name:'Semifinales',phase:'sf',matches:[
-    {h:'Gan. Ctos. 1',a:'Gan. Ctos. 2',d:'Mar 14 jul',t:'Por confirmar'},
-    {h:'Gan. Ctos. 3',a:'Gan. Ctos. 4',d:'Mié 15 jul',t:'Por confirmar'},
+    {h:'Gan. Ctos. 1',a:'Gan. Ctos. 2',d:'Mar 14 jul',t:'15:00'},
+    {h:'Gan. Ctos. 3',a:'Gan. Ctos. 4',d:'Mié 15 jul',t:'15:00'},
   ]},
   {id:'3rd',name:'Tercer lugar',phase:'3rd',matches:[
     {h:'Perd. Semi 1',a:'Perd. Semi 2',d:'Sáb 18 jul',t:'Por confirmar'},
@@ -713,25 +713,12 @@ const CAL=[
 // ── ACTUALIZAR CAL DINÁMICAMENTE DESDE RESULTADOS ────────────────
 // Lee los clasificados reales de cada fase y actualiza el calendario
 async function updateDynamicPhases(allRes){
-  // r16 → qf
+  // r16 → qf: los clasificados ya están hardcodeados en CAL[qf]
+  // Solo actualizamos si hay resultados de r16 pero los equipos
+  // ya están fijos en el calendario — no sobreescribimos con ganadores genéricos
   const r16res = allRes['r16'] || {};
   const r16matches = CAL.find(j=>j.id==='r16')?.matches || [];
-  const r16winners = r16matches.map((_,mi) => r16res[mi+'']?.c || null);
-
-  // Actualizar cuartos con ganadores de octavos
-  const qf = CAL.find(j=>j.id==='qf');
-  if(qf){
-    // Mitad izquierda: oct 0,1 → qf 0; oct 2,3 → qf 1
-    // Mitad derecha: oct 4,5 → qf 2; oct 6,7 → qf 3
-    if(r16winners[0]) qf.matches[0].h = r16winners[0];
-    if(r16winners[1]) qf.matches[0].a = r16winners[1];
-    if(r16winners[2]) qf.matches[1].h = r16winners[2];
-    if(r16winners[3]) qf.matches[1].a = r16winners[3];
-    if(r16winners[4]) qf.matches[2].h = r16winners[4];
-    if(r16winners[5]) qf.matches[2].a = r16winners[5];
-    if(r16winners[6]) qf.matches[3].h = r16winners[6];
-    if(r16winners[7]) qf.matches[3].a = r16winners[7];
-  }
+  // No tocar qf.matches — ya tienen los equipos correctos hardcodeados
 
   // qf → sf
   const qfres = allRes['qf'] || {};
