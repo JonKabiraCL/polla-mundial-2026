@@ -452,9 +452,9 @@ const DEADLINES={
   r32:       new Date('2026-06-28T14:59:00-04:00'),
   r16:       new Date('2026-07-04T12:59:00-04:00'),
   qf:        new Date('2026-07-09T15:59:00-04:00'),
-  sf:        new Date('2026-07-14T12:59:00-04:00'),
-  '3rd':     new Date('2026-07-18T12:59:00-04:00'),
-  final:     new Date('2026-07-19T16:59:00-04:00'),
+  sf:        new Date('2026-07-14T14:59:00-04:00'),
+  '3rd':     new Date('2026-07-18T16:59:00-04:00'),
+  final:     new Date('2026-07-19T14:59:00-04:00'),
 };
 
 const DEADLINE_LABELS={
@@ -699,14 +699,14 @@ const CAL=[
     {h:'Argentina',      a:'Suiza',         d:'Sáb 11 jul',t:'21:00'},
   ]},
   {id:'sf',name:'Semifinales',phase:'sf',matches:[
-    {h:'Gan. Ctos. 1',a:'Gan. Ctos. 2',d:'Mar 14 jul',t:'15:00'},
-    {h:'Gan. Ctos. 3',a:'Gan. Ctos. 4',d:'Mié 15 jul',t:'15:00'},
+    {h:'Francia',    a:'España',     d:'Mar 14 jul',t:'15:00'},
+    {h:'Inglaterra', a:'Argentina',  d:'Mié 15 jul',t:'15:00'},
   ]},
   {id:'3rd',name:'Tercer lugar',phase:'3rd',matches:[
-    {h:'Perd. Semi 1',a:'Perd. Semi 2',d:'Sáb 18 jul',t:'Por confirmar'},
+    {h:'Perd. Semi 1',a:'Perd. Semi 2',d:'Sáb 18 jul',t:'17:00'},
   ]},
   {id:'final',name:'Final · MetLife Stadium, Nueva Jersey',phase:'final',matches:[
-    {h:'Gan. Semi 1',a:'Gan. Semi 2',d:'Dom 19 jul',t:'17:00'},
+    {h:'Gan. Semi 1',a:'Gan. Semi 2',d:'Dom 19 jul',t:'15:00'},
   ]}
 ];
 
@@ -1039,8 +1039,8 @@ function renderMyPickForm(j,jPicks,res){
           </div>
         `:`
           <div class="grid3">
-            <div><label>${fll(m.h,'h')} (90')</label><input type="number" min="0" max="20" id="mp_${mi}_h" value="${ev.h!==undefined?ev.h:''}" placeholder="0" ${readOnly?'disabled':''}></div>
-            <div><label>${fll(m.a,'a')} (90')</label><input type="number" min="0" max="20" id="mp_${mi}_a" value="${ev.a!==undefined?ev.a:''}" placeholder="0" ${readOnly?'disabled':''}></div>
+            <div><label>${fll(m.h,'h')} (90')</label><input type="number" min="0" max="20" id="mp_${mi}_h" value="${ev.h!==undefined?ev.h:''}" placeholder="0" ${readOnly?'disabled':''} onchange="updateClasificaOptions(${mi},'${m.h}','${m.a}')"></div>
+            <div><label>${fll(m.a,'a')} (90')</label><input type="number" min="0" max="20" id="mp_${mi}_a" value="${ev.a!==undefined?ev.a:''}" placeholder="0" ${readOnly?'disabled':''} onchange="updateClasificaOptions(${mi},'${m.h}','${m.a}')"></div>
             <div><label>Clasifica</label>
               <select id="mp_${mi}_c" ${readOnly?'disabled':''}>
                 <option value="">—</option>
@@ -1057,6 +1057,33 @@ function renderMyPickForm(j,jPicks,res){
     }).join('')}
   </div>`;
 }
+
+// Filtra opciones del select de clasificado según el marcador ingresado
+// Si local gana → solo puede clasificar local
+// Si visita gana → solo puede clasificar visita
+// Si empate → ambos disponibles (se define en penales)
+window.updateClasificaOptions = (mi, teamH, teamA) => {
+  const hEl = document.getElementById(`mp_${mi}_h`);
+  const aEl = document.getElementById(`mp_${mi}_a`);
+  const sel = document.getElementById(`mp_${mi}_c`);
+  if(!hEl||!aEl||!sel) return;
+  const h = parseInt(hEl.value);
+  const a = parseInt(aEl.value);
+  if(isNaN(h)||isNaN(a)) return;
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">—</option>';
+  if(h > a){
+    // Local gana — solo local puede clasificar
+    sel.innerHTML += `<option value="${teamH}" selected>${teamH}</option>`;
+  } else if(a > h){
+    // Visita gana — solo visita puede clasificar
+    sel.innerHTML += `<option value="${teamA}" selected>${teamA}</option>`;
+  } else {
+    // Empate — cualquiera puede clasificar (penales)
+    sel.innerHTML += `<option value="${teamH}" ${cur===teamH?'selected':''}>${teamH}</option>`;
+    sel.innerHTML += `<option value="${teamA}" ${cur===teamA?'selected':''}>${teamA}</option>`;
+  }
+};
 
 window.saveMyPicks=async(jid)=>{
   if(isClosed(jid)){toast('⏱ Plazo cerrado');return;}
@@ -1515,15 +1542,15 @@ const DEFAULT_BRACKET = {
     {h:'Suiza',          a:'Colombia',      s:'0-0', clasificado:'Suiza'},
   ],
   l_qf: [
-    {h:'Marruecos',      a:'Francia',       s:''},
-    {h:'España',         a:'Bélgica',       s:''},
+    {h:'Francia',        a:'Marruecos',     s:'2-0', clasificado:'Francia'},
+    {h:'España',         a:'Bélgica',       s:'', clasificado:'España'},
   ],
   r_qf: [
-    {h:'Noruega',        a:'Inglaterra',    s:''},
-    {h:'Argentina',      a:'Suiza',         s:''},
+    {h:'Noruega',        a:'Inglaterra',    s:'', clasificado:'Inglaterra'},
+    {h:'Argentina',      a:'Suiza',         s:'', clasificado:'Argentina'},
   ],
-  l_sf:  [{h:'Gan. Ctos. 1',a:'Gan. Ctos. 2',s:''}],
-  r_sf:  [{h:'Gan. Ctos. 3',a:'Gan. Ctos. 4',s:''}],
+  l_sf:  [{h:'Francia',   a:'España',      s:''}],
+  r_sf:  [{h:'Inglaterra',a:'Argentina',   s:''}],
   third: {h:'Perd. Semi 1',a:'Perd. Semi 2',s:''},
   final: {h:'Gan. Semi 1', a:'Gan. Semi 2', s:''},
   champion: ''
