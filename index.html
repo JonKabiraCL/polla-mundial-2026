@@ -819,6 +819,26 @@ window.showPage=(id,btn)=>{
 // ── HELPERS ──────────────────────────────────────────────────────
 function gt(g){return g?`<span class="gtag g${g}">Grupo ${g}</span>`:'';}
 
+// Normaliza texto: quita tildes, minúsculas, espacios extra
+// También permite comparación parcial (apellido vs nombre completo)
+function normalize(s){
+  if(!s) return '';
+  return s.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .trim();
+}
+// mc: compara dos nombres tolerando tildes, mayúsculas y nombres parciales
+// ej: "Mbappe" === "Kylian Mbappé" → true
+//     "Julán Álvarez" === "Julián Álvarez" → false (error tipográfico no se corrige)
+function mc(a,b){
+  if(!a||!b) return false;
+  const na=normalize(a), nb=normalize(b);
+  if(na===nb) return true;
+  // Comparación parcial: uno contiene al otro (ej: "Mbappe" dentro de "Kylian Mbappe")
+  return na.split(' ').some(w=>w.length>3&&nb.includes(w)) ||
+         nb.split(' ').some(w=>w.length>3&&na.includes(w));
+}
+
 const FL={
   'México':'🇲🇽','Sudáfrica':'🇿🇦','Corea del Sur':'🇰🇷','Rep. Checa':'🇨🇿',
   'Canadá':'🇨🇦','Bosnia y Herz.':'🇧🇦','Catar':'🇶🇦','Suiza':'🇨🇭',
@@ -923,7 +943,7 @@ async function renderRanking(){
         });
       });
     });
-    const mc=(a,b)=>a&&b&&a.toLowerCase()===b.toLowerCase();
+    
     if(real.champion){
       PARTS.forEach((p,pi)=>{
         const pre=prePicks[p.name]||{};
@@ -1398,7 +1418,7 @@ async function renderMyPre(){
   const hasReal=!!real.champion;
   const closed=isClosed('pretorneo');
   const readOnly=hasReal||closed;
-  const mc=(a,b)=>a&&b&&a.toLowerCase()===b.toLowerCase();
+  
 
   const cdEl=document.getElementById('pre-countdown');
   if(cdEl){
@@ -1451,7 +1471,7 @@ async function renderAdminPre(){
   document.getElementById('rf').value=real.finalist||'';
   document.getElementById('rt').value=real.third||'';
   document.getElementById('rg').value=real.topscorer||'';
-  const mc=(a,b)=>a&&b&&a.toLowerCase()===b.toLowerCase();
+  
   const fields=[{k:'champion',l:'Campeón',pts:10},{k:'finalist',l:'Finalista',pts:5},{k:'third',l:'Tercer lugar',pts:3},{k:'topscorer',l:'Goleador',pts:8}];
   document.getElementById('admin-pre-display').innerHTML=`<div class="card" style="margin-top:12px;"><div class="ctitle">Pronósticos pre-torneo del grupo</div>
     ${fields.map(f=>`<div style="margin-bottom:12px;">
